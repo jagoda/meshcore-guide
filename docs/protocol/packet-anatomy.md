@@ -150,6 +150,17 @@ repeater checks whether the **first** hash matches itself, removes it from the
 front, and rebroadcasts. The packet shrinks one hash at a time as it traverses
 the route.
 
+```mermaid
+graph TD
+    S["Sender\npath: [R1][R2][R3]"]
+    R1["Repeater R1\npath[0]=R1 → match\nremoveSelfFromPath()\npath: [R2][R3]"]
+    R2["Repeater R2\npath[0]=R2 → match\nremoveSelfFromPath()\npath: [R3]"]
+    R3["Repeater R3\npath[0]=R3 → match\nremoveSelfFromPath()\npath: []"]
+    D["Destination\npath empty → deliver locally"]
+
+    S --> R1 --> R2 --> R3 --> D
+```
+
 ---
 
 ## The payload
