@@ -23,11 +23,12 @@ protocol internals.
 
 For **operators** (users running a personal node or small network): start with
 Nodes and Roles → Adverts and Contacts → How Messages Travel → Channels vs.
-Direct Messages.
+Direct Messages, then continue to [Operating MeshCore →](../operating/index.md).
 
-For **infrastructure operators** (deploying repeaters or room servers): add
-Airtime and Regions before you go on-air.
+For **infrastructure operators** (deploying repeaters or room servers): read all
+six pages — Airtime and Regions is especially important before you go on-air —
+then continue to [Operating MeshCore →](../operating/index.md).
 
 For **developers** (building on MeshCore or understanding the codebase): read
-all six pages, then continue to [The Protocol](../protocol/index.md) and
+all six pages, then continue to [The Protocol →](../protocol/index.md) and
 [Architecture & Internals](../internals/index.md).

@@ -126,9 +126,14 @@ Good practices:
 
 ## What's next
 
-- [Nodes and Roles](nodes-and-roles.md) — which node types repeat and which
-  stay silent.
-- [How Messages Travel](how-messages-travel.md) — how direct routing reduces
-  channel airtime compared to flooding.
-- [Number Allocations spec](https://docs.meshcore.io/number_allocations/) —
-  the canonical list of frequency presets and region codes.
+You have completed the Core Concepts section. Where you go next depends on
+your goal:
+
+- **Operator track** — put these concepts to work:
+  [Operating MeshCore →](../operating/index.md) covers repeaters, room servers,
+  remote admin, power management, and troubleshooting.
+- **Developer track** — go deeper into how the protocol works:
+  [The Protocol →](../protocol/index.md) walks through packet anatomy, routing,
+  and encryption from first principles.
+- **Byte-level reference** — [Number Allocations](https://docs.meshcore.io/number_allocations/)
+  on docs.meshcore.io has the canonical list of frequency presets and region codes.

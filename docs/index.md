@@ -1,7 +1,7 @@
 # MeshCore Guide
 
-Welcome to the MeshCore Guide — a narrative learning path for MeshCore, from
-first boot to building your own integrations.
+Welcome to the MeshCore Guide — a single, connected learning path for MeshCore,
+from first boot to building your own integrations on top of the mesh.
 
 MeshCore is an open-source LoRa mesh networking platform for off-grid, encrypted
 text communication — no internet, no cellular, no central server. This guide
@@ -9,6 +9,21 @@ teaches the **mental models and workflows** that make it click. Byte-level specs
 — packet format, payload tables, companion protocol frames, CLI command catalogue
 — live at [docs.meshcore.io](https://docs.meshcore.io); this guide cross-links
 there rather than restating them.
+
+## What makes this guide different
+
+The MeshCore ecosystem already has excellent resources:
+[docs.meshcore.io](https://docs.meshcore.io) for byte-level specs,
+[DeepWiki](https://deepwiki.com/meshcore-dev/MeshCore) for codebase architecture,
+and community getting-started guides from regional mesh groups. What has been
+missing is a **single, ascending path** — one that starts with flashing your
+first device and arrives, without gaps, at building your own sensor, integration,
+or custom application on top of MeshCore.
+
+That is what this guide is. It is the connective teaching tissue between
+*operator* and *developer*, with the `meshcore-ha` Home Assistant integration
+as a worked end-to-end example that bridges companion-app usage to custom
+extension. Every section points forward; nothing dead-ends.
 
 ## Who this guide is for
 
@@ -36,3 +51,7 @@ companion serial protocol frames. This guide is the **learning companion** that
 explains *why* and *how* before pointing you at the exact bytes. Use both:
 start here for concepts and workflows, follow the cross-links for the byte-level
 detail.
+
+---
+
+Ready? Start at [Getting Started →](getting-started/index.md)

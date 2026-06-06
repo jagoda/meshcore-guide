@@ -27,3 +27,10 @@ The pages here cover the **why** and **how** of real-world operation. Byte-level
 - **Tinkerers** building sensor nodes and alert systems.
 
 If you're new to MeshCore, start with [Getting Started](../getting-started/what-is-meshcore.md) and [Core Concepts](../concepts/nodes-and-roles.md) first — this section assumes you understand what a repeater is and how adverts work.
+
+---
+
+**Where the arc continues:** Operators who want to understand *why* the protocol
+works the way it does — or who want to build tools and integrations on top of
+MeshCore — should continue to [The Protocol →](../protocol/index.md) after
+reading this section.

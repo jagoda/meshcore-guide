@@ -216,3 +216,18 @@ neighbors           — last 8 heard neighbours with SNR (repeater only)
 get pwrmgt.source   — battery or external (nRF52 boards with pwr mgmt)
 get pwrmgt.bootmv   — boot voltage (nRF52 boards with pwr mgmt)
 ```
+
+---
+
+## Where next in your journey
+
+You have completed the Operating MeshCore section. Depending on your goal:
+
+- **Stay as an operator** — revisit [Running a Repeater](running-a-repeater.md)
+  or [Remote Admin CLI](remote-admin-cli.md) as reference when problems arise.
+- **Go deeper into how MeshCore works** — [The Protocol →](../protocol/index.md)
+  explains the packet anatomy, routing logic, and encryption model that underlies
+  everything you just configured. This is the gateway to the developer track.
+- **Build on MeshCore** — after The Protocol, continue to
+  [Companion API](../companion-api/index.md) and
+  [Architecture & Internals](../internals/index.md).
