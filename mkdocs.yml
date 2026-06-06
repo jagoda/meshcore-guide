@@ -105,6 +105,14 @@ nav:
     - Custom Board Variant: extending/custom-board-variant.md
     - KISS and Raw Packets: extending/kiss-and-raw-packets.md
     - Contributing Upstream: extending/contributing-upstream.md
+  - Building Applications:
+    - applications/index.md
+    - Design Constraints: applications/design-constraints.md
+    - Protocol Design Patterns: applications/protocol-design-patterns.md
+    - "Example: Messaging": applications/example-messaging.md
+    - "Example: IoT Control": applications/example-iot-control.md
+    - "Example: Multiplayer Game": applications/example-multiplayer-game.md
+    - Building and Testing: applications/building-and-testing.md
   - Reference:
     - reference/index.md
     - Glossary: reference/glossary.md
