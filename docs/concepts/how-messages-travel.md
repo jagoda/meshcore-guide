@@ -109,17 +109,29 @@ channel model.
 
 ## Visualising a three-hop journey
 
-```
-[Companion A]  →flood→  [Repeater 1]  →flood→  [Repeater 2]  →flood→  [Companion B]
-                                        ↑
-                              (Repeater 3 also heard it,
-                               but duplicate suppression
-                               dropped the retransmit)
+```mermaid
+sequenceDiagram
+    participant A as Companion A
+    participant R1 as Repeater 1
+    participant R3 as Repeater 3
+    participant R2 as Repeater 2
+    participant B as Companion B
 
-← PATH packet returned (flood, records R1→R2) ←
+    Note over A,B: First send — flood routing
+    A->>R1: FLOOD
+    A->>R3: FLOOD
+    R1->>R2: relay (flood)
+    R1-->>R3: relay heard by R3
+    Note over R3: hasSeen? YES — drop duplicate
+    R2->>B: relay (flood) — delivered ✓
+    B-->>A: PATH packet (path: R1→R2) — flood
+    Note over A: Store path: R1 → R2
 
-Next send:
-[Companion A]  →direct(R1,R2)→  [Repeater 1]  →direct(R2)→  [Repeater 2]  →deliver→  [Companion B]
+    Note over A,B: Subsequent sends — direct routing
+    A->>R1: DIRECT (path: R1, R2)
+    R1->>R2: DIRECT (path: R2)
+    R2->>B: DIRECT (path: empty) — delivered ✓
+    B-->>A: ACK (path: R2, R1)
 ```
 
 ---

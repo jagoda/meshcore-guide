@@ -87,6 +87,25 @@ Direct messages (`PAYLOAD_TYPE_TXT_MSG`) are encrypted end-to-end:
    receiver recomputes the MAC; a mismatch means the packet was tampered with
    or is addressed to the wrong node.
 
+```mermaid
+sequenceDiagram
+    participant Alice as Alice's Firmware
+    participant Wire as LoRa (repeaters relay opaque bytes)
+    participant Bob as Bob's Firmware
+
+    Note over Alice: has: prv_A, pub_B
+    Alice->>Alice: ECDH(prv_A, pub_B) → shared_secret
+    Alice->>Alice: AES-128-encrypt(timestamp + text) → ciphertext
+    Alice->>Alice: prepend MAC (2 bytes)
+    Alice->>Wire: [dest_hash][src_hash][MAC][ciphertext]
+    Note over Wire: each repeater forwards the<br/>ciphertext without decrypting
+    Wire->>Bob: [dest_hash][src_hash][MAC][ciphertext]
+    Note over Bob: has: prv_B, pub_A
+    Bob->>Bob: ECDH(prv_B, pub_A) → same shared_secret
+    Bob->>Bob: recompute MAC — must match
+    Bob->>Bob: AES-128-decrypt → plaintext ✓
+```
+
 ```
 On wire: [dest hash][src hash][MAC (2 B)][AES-128 ciphertext]
 ```
