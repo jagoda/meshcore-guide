@@ -133,13 +133,15 @@ implement this natively for text messages. For application data:
 **Option A — Room server as mailbox.** Send your application message as a
 `PAYLOAD_TYPE_GRP_DATA` to a channel the room server is subscribed to. The room
 server stores it and pushes it to connected clients. This works without any
-firmware changes and is the pattern used in the messaging example.
+firmware changes and is the classic room-server mailbox pattern.
 
 **Option B — Custom firmware relay.** Add a firmware-side store-and-forward
 buffer using `PAYLOAD_TYPE_REQ` / `RESPONSE`. The relay node accepts requests
 on behalf of offline destinations, stores them, and forwards when the
 destination advertises. This requires a custom firmware build (see
-[Extending MeshCore](../extending/index.md)).
+[Extending MeshCore](../extending/index.md)); the
+[escape-room example](example-escape-room.md) uses this to buffer checkpoint
+claims for an out-of-range game master.
 
 In both cases:
 - Tag stored messages with a TTL. Expire and discard after TTL elapses.
@@ -175,7 +177,9 @@ The mesh is a shared channel. Do not burst-transmit. Rules of thumb:
   will queue or drop packets that exceed its budget. Build a local queue with
   backpressure rather than hammering the serial interface.
 
-The IoT control example shows a practical duty-cycle-aware polling pattern.
+The [mesh-creature example](example-creature.md) shows a duty-cycle-aware
+heartbeat cadence, and the [escape-room example](example-escape-room.md)
+staggers station beacons so they do not flood in the same window.
 
 ## Protocol versioning
 
