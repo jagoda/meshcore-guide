@@ -145,6 +145,20 @@ When a node receives a `PAYLOAD_TYPE_ADVERT` packet, the processing in
    If the signature is invalid, the advert is silently dropped — no relay, no
    contact storage.
 
+```mermaid
+flowchart TD
+    R["Receive PAYLOAD_TYPE_ADVERT"] --> LEN{"Packet complete?\npub_key + timestamp + signature present"}
+    LEN -- no --> DROP1["drop"]
+    LEN -- yes --> SELF{"pub_key == self_id?"}
+    SELF -- yes --> DROP2["drop — own advert reflected"]
+    SELF -- no --> DUP{"hasSeen(pkt)?"}
+    DUP -- yes --> RELAY["relay only\n(no contact update)"]
+    DUP -- no --> SIG{"Identity::verify(signature)?"}
+    SIG -- invalid --> DROP3["drop — forged or corrupted"]
+    SIG -- valid --> STORE["onAdvertRecv()\nstore/update contact list"]
+    STORE --> RELAY2["relay flood\n(propagate to mesh)"]
+```
+
 ```cpp
 // From Mesh::onRecvPacket(), PAYLOAD_TYPE_ADVERT case (condensed):
 is_ok = id.verify(signature, message, msg_len);
