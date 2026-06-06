@@ -25,9 +25,10 @@ not re-derive them; look them up.
 
 **If your message does not fit in a single packet**, MeshCore provides
 `PAYLOAD_TYPE_MULTIPART` for splitting. Fragmentation adds complexity and
-airtime — prefer designing messages that fit in one packet. For the messaging
-example, this means keeping message bodies short (think SMS, not email
-threads). If you must fragment, see the fragmentation pattern in
+airtime — prefer designing messages that fit in one packet. In the worked
+examples this means keeping payloads terse: a creature's state snapshot or an
+escape-room clue should fit a single packet rather than span fragments. If you
+must fragment, see the fragmentation pattern in
 [Protocol Design Patterns](protocol-design-patterns.md#fragmentation-and-reassembly).
 
 ## Airtime and duty-cycle budget

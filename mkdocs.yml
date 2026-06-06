@@ -113,8 +113,8 @@ nav:
     - applications/index.md
     - Design Constraints: applications/design-constraints.md
     - Protocol Design Patterns: applications/protocol-design-patterns.md
-    - "Example: Messaging": applications/example-messaging.md
-    - "Example: IoT Control": applications/example-iot-control.md
+    - "Example: Mesh Creature": applications/example-creature.md
+    - "Example: Escape Room": applications/example-escape-room.md
     - "Example: Multiplayer Game": applications/example-multiplayer-game.md
     - Building and Testing: applications/building-and-testing.md
   - Reference:

@@ -62,13 +62,15 @@ envelope before you commit to either surface.
 ## The three worked examples
 
 This section is anchored by three applications at different points of the
-design space:
+design space — and across both implementation surfaces. Two are deliberately
+**firmware-side** (they must run on the node MCU with no host attached); one is
+host-side:
 
-| Example | Class | Key patterns used |
-|---|---|---|
-| [Email-like messaging](example-messaging.md) | Store-and-forward mailbox | offline delivery, delivery receipts, room-server relay |
-| [IoT remote control](example-iot-control.md) | Command/response | idempotent commands, push telemetry, duty-cycle-aware polling |
-| [Multiplayer game](example-multiplayer-game.md) | Turn-based state sync | turn sequencing, lobby discovery, trust/anti-cheat |
+| Example | Class | Surface | Key patterns used |
+|---|---|---|---|
+| [A creature that lives in the mesh](example-creature.md) | Roaming autonomous agent | Firmware-side | single-authority token, two-phase migration, idempotent interaction, slow heartbeat |
+| [Escape-room / scavenger-hunt](example-escape-room.md) | Embedded prop network | Firmware-side | autonomous actuation, idempotent claims, store-and-forward progress, beacon discovery |
+| [Multiplayer game](example-multiplayer-game.md) | Turn-based state sync | Host-side | turn sequencing, lobby discovery, trust/anti-cheat |
 
 Each example maps its design choices back to the shared vocabulary in
 [Protocol Design Patterns](protocol-design-patterns.md), so you can mix
