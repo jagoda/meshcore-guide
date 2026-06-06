@@ -4,6 +4,13 @@ This section is a developer-oriented tour of the MeshCore codebase.
 If you want to understand how the firmware works under the hood — or you
 want to extend it — start here.
 
+!!! tip "Complementary resource"
+    [DeepWiki — meshcore-dev/MeshCore](https://deepwiki.com/meshcore-dev/MeshCore)
+    is an auto-generated architecture reference for the same codebase. Use it
+    for deep dives into specific classes or call-graph traces; use this section
+    for the narrative walkthrough that explains *why* the pieces fit together the
+    way they do.
+
 ## What you will find
 
 | Page | What it covers |

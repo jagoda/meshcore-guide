@@ -118,7 +118,8 @@ pick the right `boards/` and `arch/` directories.
 | `build_as_lib.py` | Packages `src/` as an Arduino library for use outside PlatformIO |
 | `create-uf2.py` / `merge-bin.py` | Post-build utilities for UF2 and merged-binary output |
 
-> **Cross-link:** For flash instructions and supported device list see
-> [Flash Your First Device](../getting-started/flash-your-first-device.md).
-> For build-from-source instructions see
-> [Build From Source](../extending/build-from-source.md).
+> **Cross-links:**
+> For flash instructions and supported device list: [Flash Your First Device](../getting-started/flash-your-first-device.md).
+> For build-from-source instructions: [Build From Source](../extending/build-from-source.md).
+> For auto-generated class-level codebase reference (call graphs, class hierarchies):
+> [DeepWiki — meshcore-dev/MeshCore](https://deepwiki.com/meshcore-dev/MeshCore).

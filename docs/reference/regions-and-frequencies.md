@@ -90,6 +90,21 @@ Multi-region bridging is an advanced feature; see the [Number Allocations spec](
 
 ---
 
+## Regional community resources
+
+Regional MeshCore communities maintain their own getting-started guides and
+consensus frequency tables. These are the right place for deployment specifics
+(antenna heights, local interference sources, link-budget measurements) that
+are too regional to belong in a general guide:
+
+- **[MeshCore Discord](https://meshcore.gg)** — find your regional channel under `#regions`. This is the primary place to ask "what settings does my local mesh use?"
+- **[map.meshcore.io](https://map.meshcore.io)** — see live nodes near you and infer which frequency plan your region's mesh is already using before you transmit.
+- **[MeshCore FAQ §Regions](https://docs.meshcore.io/faq/)** — common regional setup questions.
+
+For North American and European community-specific guides, check the Discord for pinned links — some regions have published their own setup walkthroughs.
+
+---
+
 ## See also
 
 - [Airtime and Regions](../concepts/airtime-and-regions.md) — conceptual guide to airtime, duty cycle, and why they matter.
