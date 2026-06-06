@@ -124,7 +124,7 @@ This opts in to a fast-track merge process maintained by the project.
    git push origin dev
    ```
 3. If you added a new board variant, consider opening a PR to
-   [meshcore-guide](https://github.com/jjagoda/meshcore-guide) adding the board
+   [meshcore-guide](https://github.com/jagoda/meshcore-guide) adding the board
    to the [What You Need](../getting-started/what-you-need.md) hardware list.
 
 ## Reporting bugs

@@ -48,7 +48,7 @@ No compilation needed. Pick the client for your platform:
 |----------|-----|-------|
 | Android | [Play Store](https://play.google.com/store/apps/details?id=com.liamcottle.meshcore.android) | Free; BLE + USB |
 | iOS / iPadOS | [App Store](https://apps.apple.com/us/app/meshcore/id6742354151) | Free; BLE |
-| Windows / Mac | [files.liamcottle.net/MeshCore](https://files.liamcottle.net/MeshCore) | Free; fully unlocked desktop builds |
+| Windows / Mac | [files.liamcottle.net/MeshCore](https://files.liamcottle.net/MeshCore/) | Free; fully unlocked desktop builds |
 | Browser (Chrome) | [app.meshcore.nz](https://app.meshcore.nz) | Free; USB Serial |
 
 For **flashing firmware** you'll also need **Google Chrome** (or any

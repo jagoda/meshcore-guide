@@ -132,7 +132,7 @@ all controllers):
 └─────────┴──────┴──────────────────────┴─────────────────────┘
 ```
 
-[CayenneLPP](https://developers.mydevices.com/cayenne/docs/lora/#lora-cayenne-low-power-payload)
+[CayenneLPP](https://docs.mydevices.com/docs/lorawan/cayenne-lpp)
 is a compact binary encoding for sensor data used throughout the MeshCore
 ecosystem (see `examples/simple_room_server/MyMesh.h` for its `CayenneLPP`
 usage). It encodes typed channels (temperature, humidity, voltage, etc.) in a

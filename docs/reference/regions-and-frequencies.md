@@ -53,7 +53,7 @@ High airtime reduces throughput for everyone sharing the channel, burns more dut
 
 ## Community consensus presets (as of 2025)
 
-Regional MeshCore communities have converged on specific settings after real-world testing. These are the most common; check your regional community on [Discord](https://discord.gg/meshcore) or the community forum for current recommendations.
+Regional MeshCore communities have converged on specific settings after real-world testing. These are the most common; check your regional community on [Discord](https://discord.com/invite/meshcore) or the community forum for current recommendations.
 
 ### EU868 community preset
 - **Frequency:** 869.525 MHz
