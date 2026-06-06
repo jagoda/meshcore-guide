@@ -157,3 +157,19 @@ After reconnecting, re-run the full startup sequence — the firmware has no mem
 - **Contact list during drain.** The firmware may emit `PUSH_CODE_ADVERT` (`0x80`) while you are draining messages with `get_msg()`. Your receive loop must route adverts out of band — they are not a response to `get_msg()`.
 
 - **Path length semantics differ by direction.** In `CMD_SEND_CHANNEL_DATA`, `path_len = 0xFF` means *flood*. In `RESP_CODE_CHANNEL_DATA_RECV`, `path_len = 0xFF` means *arrived via direct route*. The meaning is inverted. See the [Companion Protocol spec](https://docs.meshcore.io/companion_protocol/#receive-channel-data-datagram) for the full table.
+
+---
+
+## Where next in your journey
+
+You have completed the Companion API section. Where you go depends on how deep
+you want to go:
+
+- **Build a host-side application** — [Building Applications →](../applications/index.md)
+  generalises the patterns from `meshcore-ha` into an application design guide
+  with three worked examples.
+- **Understand the firmware you're talking to** — [Architecture & Internals →](../internals/index.md)
+  explains the codebase: the Dispatcher, Mesh class, routing tables, and the
+  six example firmwares that ship with MeshCore.
+- **Add new capabilities at the firmware level** — [Extending MeshCore →](../extending/index.md)
+  shows how to add custom sensors, new payload types, and new board support.

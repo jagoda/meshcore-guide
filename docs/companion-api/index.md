@@ -28,3 +28,14 @@ If you are working in Python or JavaScript, you almost certainly want one of the
 
 - **Python:** [`meshcore_py`](https://github.com/meshcore-dev/meshcore_py)
 - **JavaScript/TypeScript:** [`meshcore.js`](https://github.com/meshcore-dev/meshcore.js)
+
+---
+
+**Where the arc continues:** The `meshcore-ha` worked example in this section is
+the bridge between *using* the Companion API and *building on* MeshCore. After
+working through it, continue to:
+
+- [Architecture & Internals →](../internals/index.md) — to understand the
+  firmware internals you are talking to.
+- [Extending MeshCore →](../extending/index.md) — to build custom sensors,
+  applications, or board variants of your own.

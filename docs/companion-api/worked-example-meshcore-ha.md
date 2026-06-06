@@ -167,3 +167,21 @@ meshcore-ha demonstrates several patterns worth copying:
 4. **Serialise message fetches.** Use a lock to prevent concurrent `get_msg()` calls from racing.
 5. **Two-tier reconnect.** Let the SDK auto-reconnect for transient drops; add your own long-cycle retry for extended outages.
 6. **Separate entity creation from data fetching.** The coordinator owns data; HA entities subscribe to coordinator updates and the SDK event bus independently.
+
+---
+
+## The bridge into Extending
+
+`meshcore-ha` is the clearest available example of what "building on MeshCore"
+looks like at the host layer — a real-world application that uses the Companion
+API to read and send messages without touching firmware at all.
+
+If this walkthrough has you thinking "I want to build something like this for
+my own use case," the next stop is [Building Applications →](../applications/index.md),
+which generalises the patterns here into a framework for any host-side
+application.
+
+If you want to go deeper — adding a new payload type, running logic inside the
+firmware, or supporting new hardware — continue to
+[Extending MeshCore →](../extending/index.md). The two paths are complementary:
+`meshcore-ha` shows the host side; Extending shows the firmware side.
