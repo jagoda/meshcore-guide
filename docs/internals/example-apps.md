@@ -236,3 +236,19 @@ your own encryption/protocol above the Dispatcher layer.
 - Need raw byte transport? Start from `kiss_modem`.
 - Want the smallest possible codebase to understand the stack? Read
   `simple_secure_chat` — it has the fewest layers.
+
+---
+
+## Where next in your journey
+
+You have completed Architecture & Internals. You now understand the full stack —
+from radio hardware through Dispatcher, Mesh, and example application — and you
+know which example to start from for your use case.
+
+The next section takes that understanding and turns it into action:
+
+**[Extending MeshCore →](../extending/index.md)** — the cookbooks for adding
+custom sensors, introducing new payload types, supporting new boards, and
+contributing your work upstream. This is the arc's destination: everything
+earlier was preparation; this is where you build your own thing on top of
+MeshCore.

@@ -46,3 +46,11 @@ understands payload types and calls virtual `on…Recv()` callbacks.
 Your `MyMesh` subclass fills those callbacks with application logic.
 Nothing in this stack is multi-threaded; the whole thing runs in the
 Arduino `loop()`.
+
+---
+
+**Where the arc continues:** Understanding the internals puts you in a position
+to extend them. After this section, [Extending MeshCore →](../extending/index.md)
+provides the practical cookbooks: adding a custom sensor, introducing a new
+payload type, bringing up new hardware, and getting your work into the upstream
+repository.
