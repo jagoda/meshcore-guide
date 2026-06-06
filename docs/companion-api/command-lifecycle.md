@@ -23,12 +23,16 @@ Some frames arrive from the node with no preceding command. These **push codes**
 
 Push codes arrive on the same channel as command responses (the TX characteristic or the serial stream). Your receive loop must handle them independently of any in-flight command. A common architecture:
 
-```
-receive loop
-  ├── if frame[0] == expected_response_type  → resolve pending command future
-  ├── elif frame[0] == 0x83 (MSG_WAITING)   → schedule async flush
-  ├── elif frame[0] == 0x80 (ADVERT)        → update contact list
-  └── else                                  → log / ignore unknown type
+```mermaid
+flowchart TD
+    F["frame received\n(frame[0] = packet type)"]
+    F --> Q1{"frame[0] ==\nexpected response type?"}
+    Q1 -- yes --> RES["resolve pending command future"]
+    Q1 -- no --> Q2{"frame[0] ==\n0x83 MSG_WAITING?"}
+    Q2 -- yes --> FLUSH["schedule async message flush\nCMD_SYNC_NEXT_MESSAGE loop"]
+    Q2 -- no --> Q3{"frame[0] ==\n0x80 ADVERT?"}
+    Q3 -- yes --> ADVERT["update contact list"]
+    Q3 -- no --> IGN["log / ignore unknown type"]
 ```
 
 ## Startup handshake
@@ -43,6 +47,36 @@ After connecting, always perform the full startup sequence before issuing any ot
 6. **`CMD_SYNC_NEXT_MESSAGE` (loop)** — drains any messages that arrived while the client was disconnected.
 
 The startup sequence is not a single command — it is a series of individual request/response pairs, each completing before the next begins.
+
+```mermaid
+sequenceDiagram
+    participant App as Your App
+    participant Node as MeshCore Node
+
+    App->>Node: CMD_APP_START (0x01) + app name
+    Node-->>App: PACKET_SELF_INFO — pub key, radio settings, name
+
+    App->>Node: CMD_DEVICE_QUERY (0x16 0x03)
+    Node-->>App: PACKET_DEVICE_INFO — firmware version, limits
+
+    App->>Node: CMD_SET_DEVICE_TIME + current timestamp
+    Node-->>App: PACKET_OK
+
+    App->>Node: CMD_GET_CONTACTS
+    Node-->>App: PACKET_CONTACT_START
+    Node-->>App: PACKET_CONTACT (× N contacts)
+    Node-->>App: PACKET_CONTACT_END
+
+    loop for each channel slot 0 … max_channels-1
+        App->>Node: CMD_GET_CHANNEL (slot N)
+        Node-->>App: PACKET_CHANNEL_INFO
+    end
+
+    loop drain pending messages
+        App->>Node: CMD_SYNC_NEXT_MESSAGE
+        Node-->>App: PACKET_MSG or PACKET_OK (no more)
+    end
+```
 
 ## Timeout and error handling
 
