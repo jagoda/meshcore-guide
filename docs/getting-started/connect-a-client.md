@@ -13,7 +13,7 @@ Pick the client that fits your platform:
 |----------|-----|----------------|
 | Android | [Play Store → MeshCore](https://play.google.com/store/apps/details?id=com.liamcottle.meshcore.android) | BLE or USB |
 | iOS / iPadOS | [App Store → MeshCore](https://apps.apple.com/us/app/meshcore/id6742354151) | BLE |
-| Windows / Mac | [files.liamcottle.net/MeshCore](https://files.liamcottle.net/MeshCore) | BLE or USB |
+| Windows / Mac | [files.liamcottle.net/MeshCore](https://files.liamcottle.net/MeshCore/) | BLE or USB |
 | Browser (Chrome) | [app.meshcore.nz](https://app.meshcore.nz) | USB Serial |
 
 ---

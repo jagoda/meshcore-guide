@@ -95,7 +95,7 @@ set loop.detect minimal     — drop packets that appear in a loop
 
 **Solutions:**
 
-1. **Generate a unique key:** Use [gessaman.com/mc-keygen](https://gessaman.com/mc-keygen) to create a private key whose public key starts with an unused byte. Set it via serial: `set prv.key <hex>` then `reboot`.
+1. **Generate a unique key:** Use [gessaman.com/mc-keygen](https://gessaman.com/mc-keygen/) to create a private key whose public key starts with an unused byte. Set it via serial: `set prv.key <hex>` then `reboot`.
 
 2. **Upgrade to multibyte path hashes (firmware ≥ 1.14):**
    ```

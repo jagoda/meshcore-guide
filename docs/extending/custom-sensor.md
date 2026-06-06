@@ -10,7 +10,7 @@ A sensor node is a specialised mesh participant. It:
 
 1. Reads hardware (temperature, humidity, voltage, GPS, …) on a configurable
    interval (default: every 60 seconds, `SENSOR_READ_INTERVAL_SECS`).
-2. Encodes readings as [CayenneLPP](https://developers.mydevices.com/cayenne/docs/lpp/)
+2. Encodes readings as [CayenneLPP](https://docs.mydevices.com/docs/lorawan/cayenne-lpp)
    frames — a compact, self-describing binary format.
 3. Exposes those readings to authenticated clients via the companion request API.
 4. Can fire text alerts to subscribed contacts when a reading crosses a threshold.

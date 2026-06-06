@@ -72,7 +72,7 @@ uint8_t getPayloadVer()  const { return (header >> PH_VER_SHIFT) & PH_VER_MASK; 
 | `PAYLOAD_TYPE_RAW_CUSTOM` | `0x0F` | Raw bytes; custom encryption / payload |
 
 > **Cross-link:** For the full byte-level encoding of each payload type →
-> [`docs.meshcore.io/payloads`](https://docs.meshcore.io/payloads).
+> [`docs.meshcore.io/payloads`](https://docs.meshcore.io/payloads/).
 
 ### Path encoding
 
@@ -226,6 +226,6 @@ identity claims.
   key agreement.
 
 > **Cross-link:** Packet wire format (byte offsets, field sizes) →
-> [`docs.meshcore.io/packet_format`](https://docs.meshcore.io/packet_format).
+> [`docs.meshcore.io/packet_format`](https://docs.meshcore.io/packet_format/).
 > Identity and encryption model (conceptual) →
 > [Identity & Encryption](../concepts/identity-and-encryption.md).
