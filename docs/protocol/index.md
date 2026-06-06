@@ -36,3 +36,11 @@ The upstream reference site documents the protocol at byte resolution:
 
 Each page in this section links out to the relevant spec at the point where
 it crosses the conceptual/byte boundary.
+
+---
+
+**Where the arc continues:** After The Protocol, the natural next step is
+[Companion API →](../companion-api/index.md) — the binary frame protocol that
+lets external applications talk to a Companion Radio node. If you want to
+understand the codebase that implements what you just read, continue to
+[Architecture & Internals →](../internals/index.md).

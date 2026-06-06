@@ -195,6 +195,8 @@ to any node comparing timestamps.
 
 ## What's next
 
+Within The Protocol section:
+
 - [Routing and Flooding](routing-and-flooding.md) — how the flood mechanism
   that carries adverts works in detail.
 - [Encryption on the Wire](encryption-on-the-wire.md) — why adverts are signed
@@ -203,3 +205,9 @@ to any node comparing timestamps.
   field layout including appdata flags and optional field encoding.
 - [Number Allocations](https://docs.meshcore.io/number_allocations/) — registry
   for group data-type identifiers used alongside group adverts.
+
+**Continuing the arc:** You have completed The Protocol section. The next section
+is [Companion API →](../companion-api/index.md), which shows how external
+applications — Home Assistant integrations, custom tools, mobile apps — speak to
+a Companion Radio node using the binary frame protocol that sits on top of
+everything you just learned.
