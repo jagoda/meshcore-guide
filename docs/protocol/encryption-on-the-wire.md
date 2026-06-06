@@ -105,6 +105,25 @@ A repeater **cannot** read:
 - The request or response body.
 - The returned path content (also ECDH-encrypted).
 
+```mermaid
+graph LR
+    subgraph Packet on the wire
+        H["header\n(plaintext)"]
+        P["path field\n(plaintext)"]
+        DH["dest_hash src_hash\n(plaintext — 1 byte each)"]
+        CT["MAC + ciphertext\n(opaque to repeaters)"]
+    end
+
+    R["Repeater\nreads: header + path + hashes\ncannot read: ciphertext"]
+    D["Destination\nreads everything\ndecrypts with shared secret"]
+
+    H -->|"classifies + routes"| R
+    P -->|"forwarding decision"| R
+    DH -->|"routing lookup"| R
+    CT -->|"relayed opaque"| R
+    CT -->|"ECDH-decrypt"| D
+```
+
 The 1-byte `dest_hash` leaks that a packet is *addressed to* a node with that
 key prefix, but since one byte allows 256 possible values it provides only weak
 traffic analysis data at best.

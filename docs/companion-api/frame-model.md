@@ -66,19 +66,16 @@ The firmware re-enters idle scanning after each complete frame, so a dropped or 
 
 The mental model is:
 
-```
-┌─────────────────────────────────────────────────────┐
-│  Your application                                   │
-│                                                     │
-│  sends: [CMD_APP_START] [7 reserved bytes] [name…]  │
-│  reads: packet_type = frame[0]                      │
-│         if 0x05 → parse PACKET_SELF_INFO            │
-└─────────────────────────────────────────────────────┘
-          │                         ▲
-          │  transport wrapper      │
-          ▼                         │
-  BLE:   write to RX char    notify from TX char
-  Serial: '>' + len + frame   '<' + len + frame
+```mermaid
+graph TD
+    APP["Your application\nsends: CMD bytes (e.g. CMD_APP_START + name)\nreads: frame[0] → parse by type"]
+    TW["Transport wrapper"]
+    BLE["BLE\nsend: write to RX characteristic\nrecv: notification from TX characteristic"]
+    SER["Serial / TCP\nsend: '>' + len(2B) + frame\nrecv: '<' + len(2B) + frame"]
+
+    APP <-->|companion protocol frame| TW
+    TW --> BLE
+    TW --> SER
 ```
 
 If you are using an SDK library (`meshcore_py`, `meshcore.js`), framing is handled for you and you only ever see parsed event objects. The framing details here matter if you are implementing a new client from scratch or debugging at the byte level.
