@@ -28,8 +28,17 @@ secret.
 
 ## How a flood propagates
 
-```
-Sender → [everyone in range] → [everyone in range] → ... → Destination
+```mermaid
+flowchart TD
+    recv["Receive packet"] --> seen{"hasSeen?\npacket hash in ring buffer"}
+    seen -- "yes — duplicate" --> drop1["Drop — release to pool"]
+    seen -- no --> fwd{"allowPacketForward?\nrepeater firmware + hop limit"}
+    fwd -- "no — companion or limit hit" --> local["Deliver locally\nonRecvPacket()"]
+    fwd -- yes --> cap{"Path would exceed\nMAX_PATH_SIZE (64 B)?"}
+    cap -- yes --> drop2["Drop — path full"]
+    cap -- no --> append["Append own hash to path\nincrement hop count"]
+    append --> delay["Schedule retransmit\n(randomised delay, priority = hop count)"]
+    delay --> local
 ```
 
 ### Send side

@@ -114,19 +114,15 @@ where you need to catch up on what was said while you were offline.
 
 ## Decision guide
 
-```
-Need privacy between two people?
-  → Direct message
-
-Need to reach a group in real time?
-  → Group channel
-
-Need a group to share information asynchronously?
-  → Room Server (with group channel as fallback when out of range)
-
-Running public community infrastructure?
-  → Default public channel for general awareness;
-    per-group private channels for team-specific traffic
+```mermaid
+flowchart TD
+    Q1{"Need privacy\nbetween two specific people?"}
+    Q1 -- yes --> DM["Direct Message\nECDH-encrypted, path-routed\nDelivery ACK included"]
+    Q1 -- no --> Q2{"Need message history\nfor late arrivals?"}
+    Q2 -- yes --> RS["Room Server\nPersistent BBS — last 32 posts\nRequires Room Server node"]
+    Q2 -- no --> Q3{"Public or private group?"}
+    Q3 -- public --> PC["Default Channel\nWell-known key — treat as public square"]
+    Q3 -- private --> PG["Private Group Channel\nShared secret distributed out-of-band\n(QR code, secure copy)"]
 ```
 
 ---

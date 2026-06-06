@@ -25,6 +25,20 @@ In a mesh network, nodes don't just talk to each other directly — they *relay*
 messages for each other. A message from Node A to Node C can travel A → B → C,
 where B is an intermediate repeater that neither A nor C can directly hear.
 
+```mermaid
+graph LR
+    A["Companion\n(Alice)"]
+    R1["Repeater\n(hilltop)"]
+    R2["Repeater\n(tower)"]
+    B["Companion\n(Bob)"]
+
+    A -->|"1st send: FLOOD"| R1
+    R1 -->|"relay"| R2
+    R2 -->|"relay → delivered"| B
+    B -.->|"PATH returned"| A
+    A -->|"later sends: DIRECT"| R1
+```
+
 MeshCore makes this efficient through two key design choices:
 
 1. **Companion nodes do not repeat.** Your handheld client radio sends and

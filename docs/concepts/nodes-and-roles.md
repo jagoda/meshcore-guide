@@ -7,6 +7,33 @@ boundary matters, and how to choose the right firmware for a piece of hardware.
 
 ---
 
+## Roles at a glance
+
+```mermaid
+graph LR
+    CA["Companion\n(Alice)"]
+    CB["Companion\n(Bob)"]
+    R1["Repeater\n(hilltop)"]
+    R2["Repeater\n(tower)"]
+    RS["Room Server"]
+    SE["Sensor"]
+    OB["Observer\n(passive)"]
+
+    CA <-->|send/receive| R1
+    R1 <-->|relay| R2
+    R2 <-->|relay| CB
+    R2 <-->|relay| RS
+    SE -->|telemetry| R1
+    OB -.->|listen only| R1
+    OB -.->|listen only| R2
+```
+
+Companions never relay; only Repeaters forward packets. A Room Server stores
+message history. Sensors emit telemetry. An Observer listens but never
+transmits — it is a Repeater in passive monitoring mode.
+
+---
+
 ## Why roles are fixed
 
 MeshCore is *messaging-first*. Keeping roles fixed lets the protocol make a

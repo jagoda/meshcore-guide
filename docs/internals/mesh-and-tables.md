@@ -7,14 +7,14 @@ cryptography. `MeshTables` provides the duplicate-detection memory.
 
 ## `Mesh` inherits from `Dispatcher`
 
-```
-Dispatcher   (radio loop, Tx budget, Rx delay)
-    │
-  Mesh        (payload routing, crypto dispatch, factory methods)
-    │
-BaseChatMesh / SensorMesh / CommonCLI-based app / …
-    │
-  MyMesh      (your application overrides)
+```mermaid
+graph TD
+    D["Dispatcher\nradio loop · Tx budget · Rx delay"]
+    M["Mesh\npayload routing · crypto dispatch · factory methods"]
+    H["BaseChatMesh / SensorMesh / CommonCLI-based app / …"]
+    A["MyMesh\nyour application overrides"]
+
+    D --> M --> H --> A
 ```
 
 `Mesh` overrides `onRecvPacket()` (the hook `Dispatcher` calls after de-queuing
@@ -57,19 +57,26 @@ a packet seen 160+ others ago is too old to re-process.
 
 After `hasSeen()` passes, `Mesh` decides what to do with the packet:
 
-```
-1. Is it a FLOOD packet?
-   a. Call filterRecvFloodPacket() — application can veto forwarding.
-   b. Call allowPacketForward() — node checks hop count, its own hash in path, etc.
-   c. If forwarding allowed:
-      - Append own hash to path
-      - Re-queue via ACTION_RETRANSMIT with computed Rx delay
-   d. Decode payload type → call on…Recv() callback
+```mermaid
+flowchart TD
+    R{"Route type?"}
+    FLOOD["FLOOD packet"]
+    DIRECT["DIRECT packet"]
 
-2. Is it a DIRECT packet?
-   a. Check first path element — is it this node's hash?
-   b. If yes: peel one hop off the path, re-queue for next hop (or deliver locally).
-   c. Decode payload and call on…Recv() callback if we are the final destination.
+    R -- FLOOD --> FLOOD
+    R -- DIRECT --> DIRECT
+
+    FLOOD --> FF["filterRecvFloodPacket()\napplication veto?"]
+    FF -- vetoed --> DROP1["drop"]
+    FF -- ok --> AF["allowPacketForward()?"]
+    AF -- no --> CB1["decode payload\non…Recv() callback"]
+    AF -- yes --> FWD["append own hash\nACTION_RETRANSMIT(Rx delay)"]
+    FWD --> CB1
+
+    DIRECT --> HASH{"path[0] ==\nmy hash?"}
+    HASH -- no --> DROP2["drop — not for me"]
+    HASH -- yes --> PEEL["removeSelfFromPath()\nACTION_RETRANSMIT(0)\n(or deliver if path now empty)"]
+    PEEL --> CB2["decode payload\non…Recv() callback (if final dest)"]
 ```
 
 The re-transmit delay for flood packets (`getRetransmitDelay()`) and for

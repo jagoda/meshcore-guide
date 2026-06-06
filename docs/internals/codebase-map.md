@@ -37,6 +37,26 @@ MeshCore/
 └── build_as_lib.py        # Builds the core as an Arduino library
 ```
 
+## Software architecture
+
+```mermaid
+graph TD
+    APP["Application\nexamples/companion_radio · simple_repeater · etc."]
+    HELPERS["src/helpers/\nBaseChatMesh · CommonCLI · StaticPoolPacketManager · …"]
+    MESH["src/Mesh\npayload routing · crypto dispatch · factory methods"]
+    DISP["src/Dispatcher\ncooperative loop · Rx/Tx scheduling · duty-cycle budget"]
+    CRYPTO["src/Utils · src/Identity\nSHA-256 · AES-128 · ECDH · Ed25519"]
+    PACKET["src/Packet\nwire serialise/parse · header/path accessors"]
+    RADIO["arch/ + boards/ + helpers/radiolib/\nhardware abstraction · pin maps · radio drivers"]
+
+    APP --> HELPERS
+    HELPERS --> MESH
+    MESH --> DISP
+    DISP --> PACKET
+    MESH --> CRYPTO
+    DISP --> RADIO
+```
+
 ## `src/` — the protocol stack
 
 The six files in `src/` are the portable heart of the project.

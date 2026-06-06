@@ -147,20 +147,23 @@ encoding the route so Alice can use it for future direct sends.
 
 ## Journey summary
 
-```
-Alice              R1            R2            Bob
-  |                 |             |             |
-  |--DIRECT TXT_MSG->|             |             |
-  |  (path: R1, R2) |             |             |
-  |                 |             |             |
-  |                 |--DIRECT TXT->|             |
-  |                 |  (path: R2) |             |
-  |                 |             |             |
-  |                 |             |--DIRECT TXT->|
-  |                 |             |  (path: []) |
-  |                 |             |             | [decrypt, display]
-  |                 |             |             |
-  |<-------- DIRECT ACK (path: R2, R1) ---------|
+```mermaid
+sequenceDiagram
+    participant Alice as Alice's Companion
+    participant R1 as Repeater R1
+    participant R2 as Repeater R2
+    participant Bob as Bob's Companion
+
+    Alice->>R1: DIRECT TXT_MSG (path: R1, R2)
+    Note over R1: matches path[0]<br/>removeSelfFromPath()
+    R1->>R2: DIRECT TXT_MSG (path: R2)
+    Note over R2: matches path[0]<br/>removeSelfFromPath()
+    R2->>Bob: DIRECT TXT_MSG (path: empty)
+    Note over Bob: path empty → destination<br/>MAC check → decrypt → display ✓
+    Bob-->>R2: DIRECT ACK (path: R2, R1)
+    R2-->>R1: DIRECT ACK (path: R1)
+    R1-->>Alice: DIRECT ACK (path: empty)
+    Note over Alice: onAckRecv() → message delivered ✓
 ```
 
 ---
