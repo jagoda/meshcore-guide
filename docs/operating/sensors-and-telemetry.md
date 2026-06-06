@@ -157,7 +157,7 @@ gps setloc                     — update stored lat/lon from current GPS fix
 gps advert <none|share|prefs>  — control whether GPS location is in adverts
 ```
 
-Full command reference: [CLI Commands spec](https://docs.meshcore.nz/cli_commands/) on docs.meshcore.nz.
+Full command reference: [CLI Commands spec](https://docs.meshcore.io/cli_commands/) on docs.meshcore.io.
 
 ---
 
@@ -169,7 +169,7 @@ Sensor nodes are often deployed remotely on battery or solar. Key settings:
 - **`powersaving on`** — on supported repeater/sensor variants, enables sleep between radio events.
 - **Duty cycle** — `set dutycycle <percent>` caps the transmitter's on-air fraction.
 
-nRF52-based sensor hardware (RAK4631, Heltec T114, XIAO nRF52840) supports hardware power management with boot-voltage lockout and LPCOMP wake — see [Power & Battery](power-and-battery.md) and the [nRF52 Power Management spec](https://docs.meshcore.nz/nrf52_power_management/) for details.
+nRF52-based sensor hardware (RAK4631, Heltec T114, XIAO nRF52840) supports hardware power management with boot-voltage lockout and LPCOMP wake — see [Power & Battery](power-and-battery.md) and the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/) for details.
 
 ---
 

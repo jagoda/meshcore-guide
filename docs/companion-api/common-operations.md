@@ -1,6 +1,6 @@
 # Common Operations
 
-This page walks through the operations a typical Companion API client performs in the order it is likely to need them. Each section explains *why* the operation exists and *what to expect*, not the byte-level detail — for that, see the [Companion Protocol spec](https://docs.meshcore.nz/companion_protocol/) on docs.meshcore.nz and [Stats Binary Frames](https://docs.meshcore.nz/stats_binary_frames/) for stats commands.
+This page walks through the operations a typical Companion API client performs in the order it is likely to need them. Each section explains *why* the operation exists and *what to expect*, not the byte-level detail — for that, see the [Companion Protocol spec](https://docs.meshcore.io/companion_protocol/) on docs.meshcore.io and [Stats Binary Frames](https://docs.meshcore.io/stats_binary_frames/) for stats commands.
 
 ## 1. Startup sequence
 
@@ -119,7 +119,7 @@ STATS_TYPE_PACKETS = 2
 await send_and_wait(bytes([CMD_GET_STATS, STATS_TYPE_CORE]), expect=0x18)
 ```
 
-The response byte is `RESP_CODE_STATS` (`0x18`), followed by the sub-type byte, then the typed payload. Byte-level layouts and parsing examples are in the [Stats Binary Frames spec](https://docs.meshcore.nz/stats_binary_frames/).
+The response byte is `RESP_CODE_STATS` (`0x18`), followed by the sub-type byte, then the typed payload. Byte-level layouts and parsing examples are in the [Stats Binary Frames spec](https://docs.meshcore.io/stats_binary_frames/).
 
 **SNR decoding reminder:** SNR values throughout the API are stored as signed int8 multiplied by 4. Divide by `4.0` to recover dB. For example, byte value `0xEC` (decimal 236, signed −20) → `−20 / 4.0 = −5.0 dB`.
 

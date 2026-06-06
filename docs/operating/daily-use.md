@@ -105,7 +105,7 @@ clock               — display current device time
 ver                 — show firmware version
 ```
 
-Full command reference: [Terminal Chat CLI spec](https://docs.meshcore.nz/terminal_chat_cli/) on docs.meshcore.nz.
+Full command reference: [Terminal Chat CLI spec](https://docs.meshcore.io/terminal_chat_cli/) on docs.meshcore.io.
 
 ---
 

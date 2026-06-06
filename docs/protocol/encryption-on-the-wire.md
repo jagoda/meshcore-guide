@@ -7,8 +7,8 @@ where encryption is applied, what is — and is not — encrypted in each packet
 type, and why the design choices make sense for constrained embedded hardware.
 
 For the byte-level encoding of keys, MACs, and ciphertext fields, see the
-[Packet Format](https://docs.meshcore.nz/packet_format/) and
-[Payloads](https://docs.meshcore.nz/payloads/) specs on `docs.meshcore.nz`.
+[Packet Format](https://docs.meshcore.io/packet_format/) and
+[Payloads](https://docs.meshcore.io/payloads/) specs on `docs.meshcore.io`.
 
 ---
 
@@ -215,5 +215,5 @@ The following are **plaintext on the wire** in all current packet types:
   applied and verified in the advert flow.
 - [Routing and Flooding](routing-and-flooding.md) — what repeaters can and
   cannot see as they forward packets.
-- [Payloads spec](https://docs.meshcore.nz/payloads/) — byte-level layout of
+- [Payloads spec](https://docs.meshcore.io/payloads/) — byte-level layout of
   the MAC, ciphertext, and key fields for each payload type.

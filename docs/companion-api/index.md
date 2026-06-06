@@ -2,7 +2,7 @@
 
 The Companion API is the binary frame protocol that lets external applications — mobile apps, home-automation integrations, scripts, and custom tools — speak to a **Companion Radio** node over BLE, USB serial, or TCP/Wi-Fi.
 
-This section is a developer narrative guide. Byte-level command and response catalogs live at [docs.meshcore.nz](https://docs.meshcore.nz/) — the pages here teach the *mental model* you need to read and use those specs confidently.
+This section is a developer narrative guide. Byte-level command and response catalogs live at [docs.meshcore.io](https://docs.meshcore.io/) — the pages here teach the *mental model* you need to read and use those specs confidently.
 
 ## What's in this section
 

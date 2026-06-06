@@ -1,6 +1,6 @@
 # Glossary
 
-Every term introduced in the MeshCore Guide narrative, alphabetical. Each entry gives a one-sentence definition and a pointer to the page where it is explained in context. Byte-level encodings are deferred to [`docs.meshcore.nz`](https://docs.meshcore.nz).
+Every term introduced in the MeshCore Guide narrative, alphabetical. Each entry gives a one-sentence definition and a pointer to the page where it is explained in context. Byte-level encodings are deferred to [`docs.meshcore.io`](https://docs.meshcore.io).
 
 ---
 

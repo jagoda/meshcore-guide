@@ -6,7 +6,7 @@ vector, a custom data feed — you can introduce a new **group data payload** wi
 your own 16-bit data-type identifier.
 
 This cookbook covers the concept; byte-level frame layout lives in the
-[Payload Types spec](https://docs.meshcore.nz/payloads/) on docs.meshcore.nz.
+[Payload Types spec](https://docs.meshcore.io/payloads/) on docs.meshcore.io.
 
 ## How group data payloads work
 
@@ -23,8 +23,8 @@ The 16-bit space is partitioned:
 | `0xFF00–0xFFFF` | Development / testing — use freely, no registration required |
 
 For the full allocation table and registration instructions, see the
-[Number Allocations](https://docs.meshcore.nz/number_allocations/) page on
-docs.meshcore.nz.
+[Number Allocations](https://docs.meshcore.io/number_allocations/) page on
+docs.meshcore.io.
 
 ## Development workflow
 
@@ -125,5 +125,5 @@ system. If you want your application's data to be readable by a companion app:
 2. The host app then interprets the forwarded payload.
 
 See the [Companion API](../companion-api/index.md) section for the frame-level
-protocol, and the [Number Allocations](https://docs.meshcore.nz/number_allocations/)
+protocol, and the [Number Allocations](https://docs.meshcore.io/number_allocations/)
 page for the companion-side data-type registry.

@@ -6,9 +6,9 @@ or names. This page explains how adverts are constructed and signed, how they
 are sent (zero-hop vs. flood), what triggers a re-advert, and how a receiving
 node processes and stores them.
 
-Byte-level field tables are in the [Payloads spec](https://docs.meshcore.nz/payloads/)
-and [Number Allocations](https://docs.meshcore.nz/number_allocations/) on
-`docs.meshcore.nz`.
+Byte-level field tables are in the [Payloads spec](https://docs.meshcore.io/payloads/)
+and [Number Allocations](https://docs.meshcore.io/number_allocations/) on
+`docs.meshcore.io`.
 
 ---
 
@@ -199,7 +199,7 @@ to any node comparing timestamps.
   that carries adverts works in detail.
 - [Encryption on the Wire](encryption-on-the-wire.md) — why adverts are signed
   but not encrypted, and how the signature protects them.
-- [Payloads spec](https://docs.meshcore.nz/payloads/) — byte-level advert
+- [Payloads spec](https://docs.meshcore.io/payloads/) — byte-level advert
   field layout including appdata flags and optional field encoding.
-- [Number Allocations](https://docs.meshcore.nz/number_allocations/) — registry
+- [Number Allocations](https://docs.meshcore.io/number_allocations/) — registry
   for group data-type identifiers used alongside group adverts.

@@ -37,7 +37,7 @@ job is to put useful semantics on top of those packets.
 └──────────────────────────────────────────┘
 ```
 
-Each layer has a dedicated spec on [docs.meshcore.nz](https://docs.meshcore.nz).
+Each layer has a dedicated spec on [docs.meshcore.io](https://docs.meshcore.io).
 This guide does not re-derive those specs; it teaches how to *use* them
 together to ship a real application.
 

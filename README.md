@@ -4,7 +4,7 @@ Beginner-to-advanced narrative guide for [MeshCore](https://github.com/ripplebiz
 a LoRa mesh networking stack.
 
 **Byte-level specs** (packet format, payload tables, companion protocol frames, CLI commands)
-live at [docs.meshcore.nz](https://docs.meshcore.nz). This guide teaches the mental models,
+live at [docs.meshcore.io](https://docs.meshcore.io). This guide teaches the mental models,
 operator workflows, and developer architecture that make those specs meaningful.
 
 ## Reading tracks

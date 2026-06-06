@@ -186,5 +186,5 @@ coordination.
 
 > **Cross-link:** Packet format details (header byte layout, path encoding,
 > payload type byte values) →
-> [`docs.meshcore.nz/packet_format`](https://docs.meshcore.nz/packet_format)
-> and [`docs.meshcore.nz/payloads`](https://docs.meshcore.nz/payloads).
+> [`docs.meshcore.io/packet_format`](https://docs.meshcore.io/packet_format)
+> and [`docs.meshcore.io/payloads`](https://docs.meshcore.io/payloads).

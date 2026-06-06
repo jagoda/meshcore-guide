@@ -2,7 +2,7 @@
 
 MeshCore operates in unlicensed sub-GHz ISM bands. The correct frequency plan depends on your country's regulations and the hardware you are using. This page summarises the main regions, common community presets, and the rules that apply to each.
 
-For the canonical list of region codes and frequency-preset values used in `number_allocations.md` and `RegionMap`, see the [Number Allocations spec](https://docs.meshcore.nz/number_allocations/) on `docs.meshcore.nz`.
+For the canonical list of region codes and frequency-preset values used in `number_allocations.md` and `RegionMap`, see the [Number Allocations spec](https://docs.meshcore.io/number_allocations/) on `docs.meshcore.io`.
 
 ---
 
@@ -86,13 +86,13 @@ MeshCore supports **transport repeaters** that bridge two independent RF regions
 
 The `RegionMap` helper (`src/helpers/RegionMap.*`) maintains a named tree of regions and the transport keys used to authenticate cross-region packet forwarding. Region configuration is done via the admin CLI.
 
-Multi-region bridging is an advanced feature; see the [Number Allocations spec](https://docs.meshcore.nz/number_allocations/) for region-code assignments and the `RegionMap` source for the data model.
+Multi-region bridging is an advanced feature; see the [Number Allocations spec](https://docs.meshcore.io/number_allocations/) for region-code assignments and the `RegionMap` source for the data model.
 
 ---
 
 ## See also
 
 - [Airtime and Regions](../concepts/airtime-and-regions.md) — conceptual guide to airtime, duty cycle, and why they matter.
-- [Number Allocations spec](https://docs.meshcore.nz/number_allocations/) — canonical region codes and frequency-preset values.
+- [Number Allocations spec](https://docs.meshcore.io/number_allocations/) — canonical region codes and frequency-preset values.
 - [Flash Your First Device](../getting-started/flash-your-first-device.md) — selecting the correct region preset during flashing.
 - [Running a Repeater](../operating/running-a-repeater.md) — changing RF parameters on a deployed repeater.

@@ -25,7 +25,7 @@ Conventions:
   `0x80–0xFF` = device→client (this is the pattern the Companion API uses —
   see [Frame Model](../companion-api/frame-model.md)).
 - If you introduce a new `GRP_DATA` data type, register a number in the
-  [Number Allocations spec](https://docs.meshcore.nz/number_allocations/).
+  [Number Allocations spec](https://docs.meshcore.io/number_allocations/).
 
 For host-side applications using the Companion API, your type byte lives
 inside the blob you pass to the send-message or send-data frame. The mesh

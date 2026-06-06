@@ -156,4 +156,4 @@ After reconnecting, re-run the full startup sequence — the firmware has no mem
 
 - **Contact list during drain.** The firmware may emit `PUSH_CODE_ADVERT` (`0x80`) while you are draining messages with `get_msg()`. Your receive loop must route adverts out of band — they are not a response to `get_msg()`.
 
-- **Path length semantics differ by direction.** In `CMD_SEND_CHANNEL_DATA`, `path_len = 0xFF` means *flood*. In `RESP_CODE_CHANNEL_DATA_RECV`, `path_len = 0xFF` means *arrived via direct route*. The meaning is inverted. See the [Companion Protocol spec](https://docs.meshcore.nz/companion_protocol/#receive-channel-data-datagram) for the full table.
+- **Path length semantics differ by direction.** In `CMD_SEND_CHANNEL_DATA`, `path_len = 0xFF` means *flood*. In `RESP_CODE_CHANNEL_DATA_RECV`, `path_len = 0xFF` means *arrived via direct route*. The meaning is inverted. See the [Companion Protocol spec](https://docs.meshcore.io/companion_protocol/#receive-channel-data-datagram) for the full table.

@@ -140,7 +140,7 @@ Once the room server is in your contact list and you have the admin password:
 2. Three-dot menu → **Remote Admin** → enter admin password.
 3. Type CLI commands in the admin tab.
 
-Most configuration commands that work at the serial console also work remotely. Exceptions (serial-only) are noted in the [CLI Commands spec](https://docs.meshcore.nz/cli_commands/) on docs.meshcore.nz.
+Most configuration commands that work at the serial console also work remotely. Exceptions (serial-only) are noted in the [CLI Commands spec](https://docs.meshcore.io/cli_commands/) on docs.meshcore.io.
 
 ---
 
@@ -161,7 +161,7 @@ password <new-pw>            — change admin password
 set guest.password <pw>      — change room join password
 ```
 
-Full reference: [CLI Commands spec](https://docs.meshcore.nz/cli_commands/) on docs.meshcore.nz.
+Full reference: [CLI Commands spec](https://docs.meshcore.io/cli_commands/) on docs.meshcore.io.
 
 ---
 

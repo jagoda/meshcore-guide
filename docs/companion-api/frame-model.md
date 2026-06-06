@@ -14,7 +14,7 @@ All multi-byte integers in the payload are **little-endian** unless explicitly s
 
 Commands (app → node) and responses (node → app) share the same single-byte type namespace. A command code like `CMD_APP_START` (`0x01`) and a response code like `PACKET_SELF_INFO` (`0x05`) are distinct values in the same namespace; you always know which direction a frame is travelling based on which side sent it.
 
-The full packet type table — including all command bytes and all response codes — is in the [Companion Protocol spec](https://docs.meshcore.nz/companion_protocol/) on docs.meshcore.nz. Byte values are authoritative; symbolic names like `PACKET_OK` / `RESP_CODE_OK` / `PUSH_CODE_MSG_WAITING` are source-level aliases.
+The full packet type table — including all command bytes and all response codes — is in the [Companion Protocol spec](https://docs.meshcore.io/companion_protocol/) on docs.meshcore.io. Byte values are authoritative; symbolic names like `PACKET_OK` / `RESP_CODE_OK` / `PUSH_CODE_MSG_WAITING` are source-level aliases.
 
 The maximum companion protocol frame size is **176 bytes** (`MAX_FRAME_SIZE`). Commands that exceed this limit are rejected.
 

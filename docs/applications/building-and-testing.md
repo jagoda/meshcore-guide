@@ -32,7 +32,7 @@ and [Build from Source](../extending/build-from-source.md) in Extending MeshCore
 The `examples/companion_radio` firmware is the correct firmware to flash on
 your development node. Its `DataStore` and `MyMesh` classes show the host
 frame model in full. The Companion API frame catalogue is at
-[docs.meshcore.nz/companion_protocol](https://docs.meshcore.nz/companion_protocol/).
+[docs.meshcore.io/companion_protocol](https://docs.meshcore.io/companion_protocol/).
 
 For Python, the `meshcore-ha` project (`~/Documents/code/meshcore-ha`) is a
 reference host-side implementation that speaks the Companion API — it is worth
@@ -137,7 +137,7 @@ them. Design for **mixed-version operation** from day one:
   and `min_version` your receiver accepts from senders.
 - For firmware-side payload types: register your payload type number before
   deploying any nodes (see
-  [Number Allocations](https://docs.meshcore.nz/number_allocations/)).
+  [Number Allocations](https://docs.meshcore.io/number_allocations/)).
 
 ## From prototype to production checklist
 

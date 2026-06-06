@@ -7,8 +7,8 @@ No account, no server, no registration.
 
 This page explains the key model conceptually. For byte-level encoding of
 signatures, MACs, and cipher blocks, see the
-[Packet Format](https://docs.meshcore.nz/packet_format/) and
-[Payloads](https://docs.meshcore.nz/payloads/) specs on `docs.meshcore.nz`.
+[Packet Format](https://docs.meshcore.io/packet_format/) and
+[Payloads](https://docs.meshcore.io/payloads/) specs on `docs.meshcore.io`.
 
 ---
 
@@ -158,5 +158,5 @@ internet, no DNS, no cloud service.
   distributed and stored.
 - [Channels vs. Direct Messages](channels-vs-direct.md) — when to use shared
   channel secrets vs. per-contact ECDH.
-- [Packet Format spec](https://docs.meshcore.nz/packet_format/) — the exact
+- [Packet Format spec](https://docs.meshcore.io/packet_format/) — the exact
   wire layout of MAC, IV, and ciphertext fields.

@@ -6,7 +6,7 @@ through each type — what it is for, who sends it, and what it triggers in a
 receiver.
 
 For the exact byte layout of each payload type, see the
-[Payloads spec](https://docs.meshcore.nz/payloads/) on `docs.meshcore.nz`.
+[Payloads spec](https://docs.meshcore.io/payloads/) on `docs.meshcore.io`.
 
 ---
 
@@ -128,7 +128,7 @@ decrypt with each.
 
 The binary sibling of `GRP_TXT`. The payload carries an encrypted blob with
 a 2-byte **data type** identifier (registered in the
-[Number Allocations](https://docs.meshcore.nz/number_allocations/) registry), a
+[Number Allocations](https://docs.meshcore.io/number_allocations/) registry), a
 length byte, and the application-specific data.
 
 The data type registry allows multiple applications to coexist on the same
@@ -228,5 +228,5 @@ they are not flooded.
   encryption models that most payload types rely on.
 - [Adverts Deep Dive](adverts-deep-dive.md) — deep look at the advert payload
   and the flood mechanism that distributes it.
-- [Payloads spec](https://docs.meshcore.nz/payloads/) — byte-level field tables
+- [Payloads spec](https://docs.meshcore.io/payloads/) — byte-level field tables
   for every payload type listed above.

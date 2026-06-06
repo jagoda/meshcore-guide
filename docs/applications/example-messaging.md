@@ -43,8 +43,8 @@ custom code is on the two host applications (sender and recipient).
 Messages travel as `PAYLOAD_TYPE_GRP_DATA` packets on a private channel
 shared by all users of the application. The `data_type` field (a 16-bit
 integer in the GRP_DATA payload — see
-[Payloads spec](https://docs.meshcore.nz/payloads/)) is allocated for this
-application from the [Number Allocations spec](https://docs.meshcore.nz/number_allocations/).
+[Payloads spec](https://docs.meshcore.io/payloads/)) is allocated for this
+application from the [Number Allocations spec](https://docs.meshcore.io/number_allocations/).
 
 Envelope format (application bytes inside the GRP_DATA blob):
 

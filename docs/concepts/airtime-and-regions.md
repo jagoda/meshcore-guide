@@ -130,5 +130,5 @@ Good practices:
   stay silent.
 - [How Messages Travel](how-messages-travel.md) — how direct routing reduces
   channel airtime compared to flooding.
-- [Number Allocations spec](https://docs.meshcore.nz/number_allocations/) —
+- [Number Allocations spec](https://docs.meshcore.io/number_allocations/) —
   the canonical list of frequency presets and region codes.

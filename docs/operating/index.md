@@ -2,7 +2,7 @@
 
 This section is for people running MeshCore infrastructure — repeaters on rooftops, room servers in sheds, sensor nodes in fields — as well as everyday users who want to get the most out of daily messaging.
 
-The pages here cover the **why** and **how** of real-world operation. Byte-level command specs live on [docs.meshcore.nz](https://docs.meshcore.nz); this section links out to them where needed rather than restating them.
+The pages here cover the **why** and **how** of real-world operation. Byte-level command specs live on [docs.meshcore.io](https://docs.meshcore.io); this section links out to them where needed rather than restating them.
 
 ---
 

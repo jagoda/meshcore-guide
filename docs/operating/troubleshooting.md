@@ -1,6 +1,6 @@
 # Troubleshooting
 
-This page covers the most common problems operators encounter and the steps to diagnose them. For additional Q&A see the [MeshCore FAQ](https://docs.meshcore.nz/faq/) on docs.meshcore.nz.
+This page covers the most common problems operators encounter and the steps to diagnose them. For additional Q&A see the [MeshCore FAQ](https://docs.meshcore.io/faq/) on docs.meshcore.io.
 
 ---
 
@@ -102,7 +102,7 @@ set loop.detect minimal     — drop packets that appear in a loop
    set path.hash.mode 1    — 2-byte advert hash (65,536 unique IDs)
    set path.hash.mode 2    — 3-byte advert hash (16.7M unique IDs)
    ```
-   Wait until the majority of repeaters in your region are on firmware ≥ 1.14 before switching channel/direct messages to multibyte; older firmware drops those packets silently. See [FAQ §3.9](https://docs.meshcore.nz/faq/#39-q-what-is-multibyte-support) for migration guidance.
+   Wait until the majority of repeaters in your region are on firmware ≥ 1.14 before switching channel/direct messages to multibyte; older firmware drops those packets silently. See [FAQ §3.9](https://docs.meshcore.io/faq/#39-q-what-is-multibyte-support) for migration guidance.
 
 ---
 

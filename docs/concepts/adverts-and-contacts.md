@@ -15,8 +15,8 @@ to create, and no username/password to forget.
 
 !!! info "Byte-level key format"
     For the exact wire encoding of a public key, see the
-    [Payloads spec](https://docs.meshcore.nz/payloads/) on
-    `docs.meshcore.nz`.
+    [Payloads spec](https://docs.meshcore.io/payloads/) on
+    `docs.meshcore.io`.
 
 ---
 
@@ -84,7 +84,7 @@ interpret.
 
 !!! info "Spec detail"
     The path hash size and count are encoded in the `path_len` field of the
-    packet header. See the [Packet Format spec](https://docs.meshcore.nz/packet_format/)
+    packet header. See the [Packet Format spec](https://docs.meshcore.io/packet_format/)
     for the exact bit layout.
 
 ---

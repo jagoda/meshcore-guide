@@ -9,8 +9,8 @@ custom AX.25 tools, and others.
 !!! note "Frame-level spec"
     The frame format, SetHardware sub-commands, extension commands, and CSMA
     parameter details are specified in the
-    [KISS Modem Protocol](https://docs.meshcore.nz/kiss_modem_protocol/) page on
-    docs.meshcore.nz. This page covers the architecture, use-cases, and how to
+    [KISS Modem Protocol](https://docs.meshcore.io/kiss_modem_protocol/) page on
+    docs.meshcore.io. This page covers the architecture, use-cases, and how to
     build and use the firmware.
 
 ## What the KISS modem does

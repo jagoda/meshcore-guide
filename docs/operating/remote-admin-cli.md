@@ -5,7 +5,7 @@ Every MeshCore infrastructure node — repeater, room server, sensor — respond
 - **Locally**, via USB serial (picocom, the web flasher console, or config.meshcore.io).
 - **Remotely**, over the mesh via the companion app's **Admin** tab.
 
-This page explains both access paths, the command categories, and how to work safely on a live node. For the exhaustive command reference, see the [CLI Commands spec](https://docs.meshcore.nz/cli_commands/) and the [Terminal Chat CLI spec](https://docs.meshcore.nz/terminal_chat_cli/) on docs.meshcore.nz.
+This page explains both access paths, the command categories, and how to work safely on a live node. For the exhaustive command reference, see the [CLI Commands spec](https://docs.meshcore.io/cli_commands/) and the [Terminal Chat CLI spec](https://docs.meshcore.io/terminal_chat_cli/) on docs.meshcore.io.
 
 ---
 
@@ -142,7 +142,7 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 
 ### Region management (v1.10+)
 
-Regions allow repeaters to scope flood traffic geographically. A detailed walk-through is in the [CLI Commands spec](https://docs.meshcore.nz/cli_commands/#region-management-v110).
+Regions allow repeaters to scope flood traffic geographically. A detailed walk-through is in the [CLI Commands spec](https://docs.meshcore.io/cli_commands/#region-management-v110).
 
 Quick patterns:
 
@@ -186,7 +186,7 @@ get pwrmgt.bootreason   — reset and shutdown reason strings
 get pwrmgt.bootmv       — boot voltage in millivolts
 ```
 
-See [Power & Battery](power-and-battery.md) and the [nRF52 Power Management spec](https://docs.meshcore.nz/nrf52_power_management/) for context.
+See [Power & Battery](power-and-battery.md) and the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/) for context.
 
 ---
 

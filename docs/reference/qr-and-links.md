@@ -2,7 +2,7 @@
 
 MeshCore uses a `meshcore://` URL scheme to share node contacts and channel keys without requiring the recipient to be in RF range. These URLs can be shared as QR codes, clipboard text, or clickable links in messaging apps.
 
-For the canonical parameter definitions, see the [QR Codes spec](https://docs.meshcore.nz/qr_codes/) on `docs.meshcore.nz`.
+For the canonical parameter definitions, see the [QR Codes spec](https://docs.meshcore.io/qr_codes/) on `docs.meshcore.io`.
 
 ---
 
@@ -97,4 +97,4 @@ Generate a random 16-byte key (your OS `urandom`, a password manager, or a crypt
 
 - [Adverts and Contacts](../concepts/adverts-and-contacts.md) — how contacts are normally added via advert reception.
 - [Channels vs. Direct](../concepts/channels-vs-direct.md) — the channel model and shared-secret design.
-- [QR Codes spec](https://docs.meshcore.nz/qr_codes/) — canonical parameter definitions on `docs.meshcore.nz`.
+- [QR Codes spec](https://docs.meshcore.io/qr_codes/) — canonical parameter definitions on `docs.meshcore.io`.

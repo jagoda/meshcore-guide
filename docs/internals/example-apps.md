@@ -151,7 +151,7 @@ Mesh → BaseChatMesh → MyMesh
   handling for devices with a screen.
 
 The frame protocol is documented at
-[`docs.meshcore.nz/companion_protocol`](https://docs.meshcore.nz/companion_protocol).
+[`docs.meshcore.io/companion_protocol`](https://docs.meshcore.io/companion_protocol).
 The companion-API narrative is in
 [The Companion API](../companion-api/index.md).
 
@@ -211,7 +211,7 @@ any use case where you want to send arbitrary byte payloads and handle
 your own encryption/protocol above the Dispatcher layer.
 
 > **Cross-link:** KISS frame protocol spec →
-> [`docs.meshcore.nz/kiss_modem_protocol`](https://docs.meshcore.nz/kiss_modem_protocol).
+> [`docs.meshcore.io/kiss_modem_protocol`](https://docs.meshcore.io/kiss_modem_protocol).
 > For a KISS integration guide → [KISS and Raw Packets](../extending/kiss-and-raw-packets.md).
 
 ---

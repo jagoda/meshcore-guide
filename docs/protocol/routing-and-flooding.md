@@ -238,5 +238,5 @@ reached only via flood), they also travel as floods.
   nodes can and cannot read in the packets they relay.
 - [Adverts Deep Dive](adverts-deep-dive.md) — how the flood mechanism is used
   specifically for node discovery.
-- [Packet Format spec](https://docs.meshcore.nz/packet_format/) — path_length
+- [Packet Format spec](https://docs.meshcore.io/packet_format/) — path_length
   encoding, hash-size codes, and MAX_PATH_SIZE definition.

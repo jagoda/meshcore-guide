@@ -6,7 +6,7 @@ you can reason with — what each field *does*, why each design choice was
 made, and what happens at every step of a message's life.
 
 **Byte-level specs live elsewhere.** For exact field widths, bit positions, and
-encoding tables, follow the cross-links to `docs.meshcore.nz` throughout each
+encoding tables, follow the cross-links to `docs.meshcore.io` throughout each
 page. This guide teaches the *why*; the specs supply the *what*.
 
 ---
@@ -24,14 +24,14 @@ page. This guide teaches the *why*; the specs supply the *what*.
 
 ---
 
-## Relation to docs.meshcore.nz
+## Relation to docs.meshcore.io
 
 The upstream reference site documents the protocol at byte resolution:
 
-- [Packet Format](https://docs.meshcore.nz/packet_format/) — header bit layout,
+- [Packet Format](https://docs.meshcore.io/packet_format/) — header bit layout,
   `path_length` encoding, field sizes.
-- [Payloads](https://docs.meshcore.nz/payloads/) — per-type payload structures.
-- [Number Allocations](https://docs.meshcore.nz/number_allocations/) — registry
+- [Payloads](https://docs.meshcore.io/payloads/) — per-type payload structures.
+- [Number Allocations](https://docs.meshcore.io/number_allocations/) — registry
   for group data-type identifiers.
 
 Each page in this section links out to the relevant spec at the point where

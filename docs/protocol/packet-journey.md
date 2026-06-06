@@ -6,8 +6,8 @@ Bob's screen. Along the way it names each protocol object involved so that
 the deeper pages in this section have concrete hooks to build on.
 
 For the byte-level layout of each field referenced below, see the
-[Packet Format](https://docs.meshcore.nz/packet_format/) and
-[Payloads](https://docs.meshcore.nz/payloads/) specs on `docs.meshcore.nz`.
+[Packet Format](https://docs.meshcore.io/packet_format/) and
+[Payloads](https://docs.meshcore.io/payloads/) specs on `docs.meshcore.io`.
 
 ---
 
@@ -173,5 +173,5 @@ Alice              R1            R2            Bob
   how a path is discovered and returned, and why path-hash size matters.
 - [Encryption on the Wire](encryption-on-the-wire.md) — ECDH, AES-128, MAC,
   and what each repeater can — and cannot — read.
-- [Packet Format spec](https://docs.meshcore.nz/packet_format/) — byte-level
+- [Packet Format spec](https://docs.meshcore.io/packet_format/) — byte-level
   layout of every field touched in this journey.

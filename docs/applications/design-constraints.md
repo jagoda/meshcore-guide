@@ -20,7 +20,7 @@ application data depend on the payload type you're using:
 | `PAYLOAD_TYPE_MULTIPART` | additional 4-byte header | variable |
 
 Byte-level payload layouts are in the
-[Payloads spec](https://docs.meshcore.nz/payloads/) on docs.meshcore.nz. Do
+[Payloads spec](https://docs.meshcore.io/payloads/) on docs.meshcore.io. Do
 not re-derive them; look them up.
 
 **If your message does not fit in a single packet**, MeshCore provides
@@ -113,8 +113,8 @@ unverified — anyone with the key can post. For trusted multicast, use
 `PAYLOAD_TYPE_GRP_DATA` with your own application-layer signing, or use
 `PAYLOAD_TYPE_ANON_REQ` for anonymous authenticated requests.
 
-The [Number Allocations spec](https://docs.meshcore.nz/number_allocations/)
-on docs.meshcore.nz assigns the type numbers for the `data_type` field in
+The [Number Allocations spec](https://docs.meshcore.io/number_allocations/)
+on docs.meshcore.io assigns the type numbers for the `data_type` field in
 `GRP_DATA` packets. If you invent a new data type, allocate a number there to
 avoid collisions with other applications.
 

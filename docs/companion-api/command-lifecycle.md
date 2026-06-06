@@ -10,7 +10,7 @@ In pseudocode:
 response = await send_and_wait(CMD_GET_CHANNEL, payload=[0x01], expect=PACKET_CHANNEL_INFO, timeout=5.0)
 ```
 
-The **expected response type** is fixed per command — `CMD_GET_CHANNEL` always yields `PACKET_CHANNEL_INFO`, `CMD_APP_START` always yields `PACKET_SELF_INFO`, and so on. The [Companion Protocol spec](https://docs.meshcore.nz/companion_protocol/#response-handling) lists the mapping for every command.
+The **expected response type** is fixed per command — `CMD_GET_CHANNEL` always yields `PACKET_CHANNEL_INFO`, `CMD_APP_START` always yields `PACKET_SELF_INFO`, and so on. The [Companion Protocol spec](https://docs.meshcore.io/companion_protocol/#response-handling) lists the mapping for every command.
 
 ## Push codes — unsolicited notifications
 
@@ -56,7 +56,7 @@ Do not retry immediately — a timed-out command may still be processing on the 
 
 When the firmware returns `PACKET_ERROR` (`0x01`):
 
-- Byte 1 is an error code (if present). See the [error code table](https://docs.meshcore.nz/companion_protocol/#error-codes) for meanings.
+- Byte 1 is an error code (if present). See the [error code table](https://docs.meshcore.io/companion_protocol/#error-codes) for meanings.
 - Common codes: `ERR_CODE_NOT_FOUND` (2) when a channel or contact doesn't exist, `ERR_CODE_TABLE_FULL` (3) when the outbound queue is saturated (retry after a short delay), `ERR_CODE_ILLEGAL_ARG` (6) for malformed command payloads.
 - After logging, clear the in-flight slot and proceed.
 

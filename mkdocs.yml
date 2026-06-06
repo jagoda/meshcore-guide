@@ -2,7 +2,7 @@ site_name: MeshCore Guide
 site_description: >-
   A beginner-to-advanced narrative guide for MeshCore — mesh networking,
   operator workflows, the companion API, and codebase internals.
-  Byte-level specs live at docs.meshcore.nz; this guide teaches the mental models.
+  Byte-level specs live at docs.meshcore.io; this guide teaches the mental models.
 site_url: https://jjagoda.github.io/meshcore-guide/
 repo_url: https://github.com/jjagoda/meshcore-guide
 repo_name: jjagoda/meshcore-guide

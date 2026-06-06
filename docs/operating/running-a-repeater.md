@@ -99,14 +99,14 @@ Once the repeater is in your contact list and you know the admin password:
 3. Enter the admin password.
 4. You now have a remote CLI tab. Type commands as if at a serial console.
 
-> **Freemium note:** Remote admin over RF has a wait-gate on the iOS/Android app — a one-time unlock removes it. The T-Deck requires a registration key for this feature. See [faq.md §3.1](https://docs.meshcore.nz/faq/) for details.
+> **Freemium note:** Remote admin over RF has a wait-gate on the iOS/Android app — a one-time unlock removes it. The T-Deck requires a registration key for this feature. See [faq.md §3.1](https://docs.meshcore.io/faq/) for details.
 
 ---
 
 ## Key CLI commands for repeater operators
 
 All commands below can be sent locally (serial) or remotely (companion app admin CLI).
-For the full command reference see [CLI Commands spec](https://docs.meshcore.nz/cli_commands/) on docs.meshcore.nz.
+For the full command reference see [CLI Commands spec](https://docs.meshcore.io/cli_commands/) on docs.meshcore.io.
 
 ### Operational status
 
@@ -131,7 +131,7 @@ set tx <dbm>           — change TX power (reboot to apply)
 ```
 
 !!! warning "TX power limits"
-    Setting TX power too high can violate regulations and damage hardware with a PA stage. Check your board's manual and your regional EIRP limit before increasing power. The [CLI Commands spec](https://docs.meshcore.nz/cli_commands/) lists per-device notes.
+    Setting TX power too high can violate regulations and damage hardware with a PA stage. Check your board's manual and your regional EIRP limit before increasing power. The [CLI Commands spec](https://docs.meshcore.io/cli_commands/) lists per-device notes.
 
 ### Routing tuning
 
@@ -155,7 +155,7 @@ get path.hash.mode     — 0 = 1-byte (default), 1 = 2-byte, 2 = 3-byte
 set path.hash.mode 1   — use 2-byte hashes in this repeater's adverts
 ```
 
-Larger hashes help mesh-analysis tools disambiguate repeaters but reduce max flood range. See [FAQ §3.9](https://docs.meshcore.nz/faq/#39-q-what-is-multibyte-support) for migration guidance.
+Larger hashes help mesh-analysis tools disambiguate repeaters but reduce max flood range. See [FAQ §3.9](https://docs.meshcore.io/faq/#39-q-what-is-multibyte-support) for migration guidance.
 
 ### Flood advert interval
 

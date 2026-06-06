@@ -6,8 +6,8 @@ it; the path field drives hop-by-hop delivery; and the payload carries the
 actual content. This page explains what each section *means* operationally.
 
 For the exact byte widths and bit positions of every field, see the
-[Packet Format](https://docs.meshcore.nz/packet_format/) spec on
-`docs.meshcore.nz`.
+[Packet Format](https://docs.meshcore.io/packet_format/) spec on
+`docs.meshcore.io`.
 
 ---
 
@@ -186,5 +186,5 @@ encode/decode boundary.
   types is for and when it appears.
 - [Routing and Flooding](routing-and-flooding.md) — how the path field evolves
   during a flood, and how direct routing uses it.
-- [Packet Format spec](https://docs.meshcore.nz/packet_format/) — byte-level
+- [Packet Format spec](https://docs.meshcore.io/packet_format/) — byte-level
   layout with exact bit masks and field widths.

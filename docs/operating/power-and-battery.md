@@ -2,7 +2,7 @@
 
 Always-on infrastructure — repeaters on rooftops, sensors in fields, room servers in garages — runs from battery, solar, or a combination. This page covers the practical operator side: sizing, charging topologies, duty-cycle tuning, and the nRF52 power management features available on supported boards.
 
-For byte-level nRF52 power management internals (LPCOMP configuration, register layout, board implementation), see the [nRF52 Power Management spec](https://docs.meshcore.nz/nrf52_power_management/) on docs.meshcore.nz.
+For byte-level nRF52 power management internals (LPCOMP configuration, register layout, board implementation), see the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/) on docs.meshcore.io.
 
 ---
 
@@ -133,7 +133,7 @@ Boards with boot-lockout + LPCOMP wake + shutdown reason tracking as of the curr
 | GAT562 Mesh Watch13 | Yes |
 | SenseCAP Solar | Yes |
 
-Other nRF52 boards (T1000-E, Nano G2 Ultra, WIO Tracker, etc.) do not yet implement Phase 1. See the [nRF52 Power Management spec](https://docs.meshcore.nz/nrf52_power_management/) for the full board table and Phase 2 roadmap (runtime voltage monitoring, load shedding).
+Other nRF52 boards (T1000-E, Nano G2 Ultra, WIO Tracker, etc.) do not yet implement Phase 1. See the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/) for the full board table and Phase 2 roadmap (runtime voltage monitoring, load shedding).
 
 ---
 
