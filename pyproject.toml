@@ -1,0 +1,11 @@
+[project]
+name = "meshcore-guide"
+version = "0.1.0"
+description = "Beginner-to-advanced narrative guide for MeshCore"
+requires-python = ">=3.11"
+dependencies = [
+    "mkdocs-material>=9.5",
+]
+
+[dependency-groups]
+dev = []

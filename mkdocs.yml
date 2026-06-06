@@ -1,0 +1,113 @@
+site_name: MeshCore Guide
+site_description: >-
+  A beginner-to-advanced narrative guide for MeshCore — mesh networking,
+  operator workflows, the companion API, and codebase internals.
+  Byte-level specs live at docs.meshcore.nz; this guide teaches the mental models.
+site_url: https://jjagoda.github.io/meshcore-guide/
+repo_url: https://github.com/jjagoda/meshcore-guide
+repo_name: jjagoda/meshcore-guide
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+  palette:
+    - scheme: default
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: deep purple
+      accent: purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - getting-started/index.md
+    - What Is MeshCore?: getting-started/what-is-meshcore.md
+    - What You Need: getting-started/what-you-need.md
+    - Flash Your First Device: getting-started/flash-your-first-device.md
+    - Connect a Client: getting-started/connect-a-client.md
+    - Send Your First Message: getting-started/send-your-first-message.md
+  - Core Concepts:
+    - concepts/index.md
+    - Nodes and Roles: concepts/nodes-and-roles.md
+    - Adverts and Contacts: concepts/adverts-and-contacts.md
+    - How Messages Travel: concepts/how-messages-travel.md
+    - Channels vs. Direct: concepts/channels-vs-direct.md
+    - Identity and Encryption: concepts/identity-and-encryption.md
+    - Airtime and Regions: concepts/airtime-and-regions.md
+  - Operating MeshCore:
+    - operating/index.md
+    - Daily Use: operating/daily-use.md
+    - Running a Repeater: operating/running-a-repeater.md
+    - Running a Room Server: operating/running-a-room-server.md
+    - Sensors and Telemetry: operating/sensors-and-telemetry.md
+    - Remote Admin CLI: operating/remote-admin-cli.md
+    - Power and Battery: operating/power-and-battery.md
+    - Troubleshooting: operating/troubleshooting.md
+  - The Protocol:
+    - protocol/index.md
+    - Packet Journey: protocol/packet-journey.md
+    - Packet Anatomy: protocol/packet-anatomy.md
+    - Payload Types Tour: protocol/payload-types-tour.md
+    - Routing and Flooding: protocol/routing-and-flooding.md
+    - Encryption on the Wire: protocol/encryption-on-the-wire.md
+    - Adverts Deep Dive: protocol/adverts-deep-dive.md
+  - Companion API:
+    - companion-api/index.md
+    - What It Is: companion-api/what-it-is.md
+    - Frame Model: companion-api/frame-model.md
+    - Command Lifecycle: companion-api/command-lifecycle.md
+    - Common Operations: companion-api/common-operations.md
+    - Worked Example — meshcore-ha: companion-api/worked-example-meshcore-ha.md
+    - Build Your Own Client: companion-api/build-your-own-client.md
+  - Architecture & Internals:
+    - internals/index.md
+    - Codebase Map: internals/codebase-map.md
+    - The Dispatcher: internals/the-dispatcher.md
+    - Mesh and Tables: internals/mesh-and-tables.md
+    - Packet and Identity: internals/packet-and-identity.md
+    - Boards and HAL: internals/boards-and-hal.md
+    - Example Apps: internals/example-apps.md
+  - Extending MeshCore:
+    - extending/index.md
+    - Build from Source: extending/build-from-source.md
+    - Custom Sensor: extending/custom-sensor.md
+    - Custom Application: extending/custom-application.md
+    - Custom Board Variant: extending/custom-board-variant.md
+    - KISS and Raw Packets: extending/kiss-and-raw-packets.md
+    - Contributing Upstream: extending/contributing-upstream.md
+  - Reference:
+    - reference/index.md
+    - Glossary: reference/glossary.md
+    - Spec Index: reference/spec-index.md
+    - QR Codes and Links: reference/qr-and-links.md
+    - Regions and Frequencies: reference/regions-and-frequencies.md
