@@ -137,3 +137,19 @@ Use the GitHub Issues tracker. Include:
 - A minimal code snippet or config if applicable.
 
 Prefix enhancement requests with `[Feature request]` in the title.
+
+---
+
+## The arc is complete
+
+You have now followed the full learning path: from flashing your first device
+and understanding the mesh, through operating infrastructure and reading the
+protocol, to building your own sensor, application, or board variant and
+contributing it back to the community.
+
+If you built something that lives at the host layer — an application that speaks
+to MeshCore via the Companion API — see [Building Applications →](../applications/index.md)
+for design patterns, worked examples, and a testing guide.
+
+For quick lookups, the [Reference →](../reference/index.md) section has the
+glossary, spec index, QR/link formats, and regional frequency tables.
