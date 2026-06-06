@@ -7,14 +7,18 @@ the outbound packet queue, and the duty-cycle budget. Everything above it
 
 ## Role in the stack
 
-```
-Radio              ← pure virtual: recvRaw(), startSendRaw(), …
-PacketManager      ← pure virtual: allocNew(), queueOutbound(), …
-MillisecondClock   ← pure virtual: getMillis()
-        │
-   Dispatcher      ← cooperative loop(); Rx detection; Tx scheduling
-        │
-      Mesh         ← payload routing (next layer up)
+```mermaid
+graph TD
+    Radio["Radio\npure virtual: recvRaw, startSendRaw, …"]
+    PM["PacketManager\npure virtual: allocNew, queueOutbound, …"]
+    MC["MillisecondClock\npure virtual: getMillis()"]
+    D["Dispatcher\ncooperative loop() — Rx detection, Tx scheduling"]
+    M["Mesh\npayload routing, next layer up"]
+
+    Radio --> D
+    PM --> D
+    MC --> D
+    D --> M
 ```
 
 `Dispatcher` is an abstract class — you never instantiate it directly.
@@ -70,6 +74,25 @@ This means no heap allocation at runtime — critical on constrained MCUs.
 
 `Dispatcher::loop()` is called every Arduino `loop()` iteration.
 It does two things in order:
+
+```mermaid
+flowchart TD
+    L["Dispatcher::loop()"] --> CR["1 · checkRecv()\npoll radio.recvRaw()"]
+    CR --> RX{bytes received?}
+    RX -- no --> CS
+    RX -- yes --> PARSE["tryParsePacket()\ncalc packetScore + Rx delay\nqueueInbound(pkt, time)"]
+    PARSE --> DRAIN["drain due inbound packets\n→ processRecvPacket()\n→ onRecvPacket()"]
+    DRAIN --> CS["2 · checkSend()\ncheck duty-cycle budget"]
+    CS --> BUD{tx budget\nexhausted?}
+    BUD -- yes --> L
+    BUD -- no --> NEXT{next outbound\npacket scheduled?}
+    NEXT -- no --> L
+    NEXT -- yes --> TX["startSendRaw()\ntrack outbound_start"]
+    TX --> DONE{isSendComplete?}
+    DONE -- no --> DONE
+    DONE -- yes --> DEDUCT["deduct actual airtime\nfrom tx_budget_ms\nonSendFinished()\nreturn to Rx mode"]
+    DEDUCT --> L
+```
 
 ### 1. `checkRecv()` — receive path
 
