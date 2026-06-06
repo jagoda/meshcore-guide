@@ -155,3 +155,25 @@ them. Design for **mixed-version operation** from day one:
       is implemented and tested.
 - [ ] Behaviour when the destination is unreachable for 1 hour is defined and
       tested.
+
+---
+
+## Where next in your journey
+
+**Host-side work is done — what if you need more?**
+
+Most applications ship entirely on the host side and never need to touch
+firmware. If you have reached the limits of what the Companion API exposes —
+routing tables, ACK callbacks, on-device processing, new sensor hardware —
+the door to the firmware side is:
+
+[Extending MeshCore →](../extending/index.md) — custom sensors, custom payload
+types, custom board variants, and contributing upstream.
+
+**For quick lookups:**
+
+- [Glossary](../reference/glossary.md) — every term used in the guide
+- [Spec Index](../reference/spec-index.md) — all `docs.meshcore.io` pages with
+  one-liners
+- [Regions and Frequencies](../reference/regions-and-frequencies.md) — RF
+  presets and duty-cycle rules by region

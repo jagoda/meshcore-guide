@@ -102,3 +102,7 @@ New to MeshCore application development? Read the pages in order:
 3. Pick the worked example closest to your use case.
 4. [Building and Testing](building-and-testing.md) — dev loop and testing
    without live RF.
+
+**Firmware-side work?** If your application needs to run *on the node* rather
+than on an attached host, continue to [Extending MeshCore →](../extending/index.md)
+for the firmware-side cookbooks (custom payload type, custom sensor, new board).
