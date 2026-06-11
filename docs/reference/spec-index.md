@@ -18,7 +18,7 @@ This guide's cross-link policy: **we author conceptual narrative and operator wo
 ---
 
 ### [Payloads](https://docs.meshcore.io/payloads/)
-**What it covers:** Byte-level layout of every payload type (`PAYLOAD_TYPE_*`): advert fields and app-data encoding, text-message inner frame, ACK CRC structure, PATH packet encoding, REQ/RESPONSE body conventions, group channel frames.
+**What it covers:** Byte-level layout of every payload type (`PAYLOAD_TYPE_*`): advert fields and app-data encoding, text-message inner frame, extended ACK structure, PATH packet encoding, REQ/RESPONSE body conventions, group channel frames.
 
 **When to use:** Building a parser for a specific payload type; verifying advert field offsets; implementing advert signing or verification.
 

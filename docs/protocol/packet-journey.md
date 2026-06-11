@@ -120,8 +120,8 @@ In `Mesh::onRecvPacket()` for `PAYLOAD_TYPE_TXT_MSG`:
 
 ## Step 5 — ACK
 
-Bob's firmware sends a `PAYLOAD_TYPE_ACK` packet containing a CRC of the
-original message. This ACK is sent **directly** back along the reciprocal
+Bob's firmware sends a `PAYLOAD_TYPE_ACK` packet containing a 6-byte extended
+ACK (a truncated hash of the original message plus attempt and random bytes). This ACK is sent **directly** back along the reciprocal
 path (Bob → R2 → R1 → Alice).
 
 Alice's `onAckRecv()` fires and the companion app marks the message delivered.

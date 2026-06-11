@@ -7,7 +7,7 @@ Every term introduced in the MeshCore Guide narrative, alphabetical. Each entry 
 ## A
 
 **ACK (acknowledgement)**
-A `PAYLOAD_TYPE_ACK` packet sent by the recipient's node after it successfully decrypts and delivers a direct message; contains a 4-byte CRC of the original message so the sender can confirm delivery.
+A `PAYLOAD_TYPE_ACK` packet sent by the recipient's node after it successfully decrypts and delivers a direct message. As of v1.16 it is a 6-byte extended ACK: a 4-byte truncated SHA-256 of the original message (timestamp + text + sender public key), followed by the attempt number and a random byte that makes each ACK packet hash uniquely. The sender matches the 4-byte hash to confirm delivery.
 → [Packet Journey](../protocol/packet-journey.md), [Payload Types Tour](../protocol/payload-types-tour.md)
 
 **Admin password**
@@ -155,11 +155,11 @@ The LoRa frequency plan for most of Europe (863–870 MHz, 1% duty cycle). Firmw
 **Flash advert** → see *Flood advert*
 
 **flood.max**
-A repeater CLI setting (`set flood.max <hops>`) that caps how many hops a channel flood is allowed to propagate through that node. Useful for containing community-channel traffic in dense meshes.
+A repeater CLI setting (`set flood.max <hops>`) that caps how many hops a channel flood is allowed to propagate through that node. Useful for containing community-channel traffic in dense meshes. As of v1.16, two companion settings cap specific flood classes separately: `flood.max.unscoped` (default 64, max 64) for unscoped/no-region floods and `flood.max.advert` (default 8, max 64) for advert floods.
 → [Channels vs. Direct](../concepts/channels-vs-direct.md), [Routing and Flooding](../protocol/routing-and-flooding.md)
 
 **Flood advert**
-An advert packet relayed by every repeater that receives it, propagating across the entire reachable mesh. Repeaters send one automatically every 12 hours (configurable). Companions can trigger a flood advert manually.
+An advert packet relayed by every repeater that receives it, propagating across the entire reachable mesh. Repeaters send one automatically every 47 hours by default (configurable). Companions can trigger a flood advert manually.
 → [Adverts and Contacts](../concepts/adverts-and-contacts.md), [Adverts Deep Dive](../protocol/adverts-deep-dive.md)
 
 **Flood routing**
@@ -329,7 +329,7 @@ A single byte in the packet header that encodes both the hash-size convention (1
 → [Packet Anatomy](../protocol/packet-anatomy.md)
 
 **PAYLOAD_TYPE_ACK**
-Protocol constant (`0x03`): delivery acknowledgement. Contains a 4-byte CRC of the original message. Unencrypted; any node can forward it.
+Protocol constant (`0x03`): delivery acknowledgement. As of v1.16 the direct-message ACK is 6 bytes — a 4-byte truncated SHA-256 of the original message plus an attempt byte and a random byte. Unencrypted; any node can forward it.
 → [Payload Types Tour](../protocol/payload-types-tour.md)
 
 **PAYLOAD_TYPE_ADVERT**
@@ -417,7 +417,7 @@ The `src/helpers/RegionMap` helper class that manages named RF regions and their
 → [Codebase Map](../internals/codebase-map.md), [Regions and Frequencies](regions-and-frequencies.md)
 
 **Repeater**
-The infrastructure firmware role. A Repeater forwards packets (both flood and direct) but has no user messaging interface. Typically deployed at elevation. Sends flood adverts every 12 hours by default.
+The infrastructure firmware role. A Repeater forwards packets (both flood and direct) but has no user messaging interface. Typically deployed at elevation. Sends flood adverts every 47 hours by default.
 → [Nodes and Roles](../concepts/nodes-and-roles.md), [Running a Repeater](../operating/running-a-repeater.md)
 
 **Returned path**

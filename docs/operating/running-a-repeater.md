@@ -85,7 +85,7 @@ reboot
 From a companion radio within RF range:
 
 1. Open the companion app → **Contacts**.
-2. The repeater should appear after it broadcasts its flood advert (default interval: 12 hours). To see it immediately, trigger an advert from the serial console: `advert`.
+2. The repeater should appear after it broadcasts its flood advert (default interval: 47 hours). To see it immediately, trigger an advert from the serial console: `advert`.
 3. Tap the repeater entry to verify name and last-seen timestamp look correct.
 
 ---
@@ -140,6 +140,8 @@ get repeat             — on/off (default: on)
 set repeat off         — turn repeating off (observer mode, see below)
 get flood.max          — maximum flood hops (default: 64)
 set flood.max 32       — cap floods at 32 hops
+get flood.max.unscoped — hop cap for unscoped (no-region) floods (default: 64, max 64)
+get flood.max.advert   — hop cap for ADVERT floods (default: 8, max 64)
 get dutycycle          — duty cycle limit (%)
 set dutycycle 10       — limit to 10% (EU 868 MHz requirement)
 get txdelay            — retransmit window factor (default: 0.5)
@@ -147,6 +149,12 @@ set txdelay 1.0        — widen the window in dense networks
 get loop.detect        — loop detection mode (off / minimal / moderate / strict)
 set loop.detect minimal
 ```
+
+As of v1.16 a repeater forwards floods under **separate** caps: regular unscoped
+floods are limited by `flood.max.unscoped` (default 64) and ADVERT floods by
+`flood.max.advert` (default 8). `flood.max` remains the overall flood-hop cap.
+Lowering `flood.max.advert` is the cheapest way to keep advert storms local
+without throttling ordinary traffic.
 
 ### Path hash size (firmware ≥ 1.14)
 
@@ -160,7 +168,7 @@ Larger hashes help mesh-analysis tools disambiguate repeaters but reduce max flo
 ### Flood advert interval
 
 ```
-get flood.advert.interval      — hours (default: 12)
+get flood.advert.interval      — hours (default: 47)
 set flood.advert.interval 6    — advert every 6 hours
 ```
 

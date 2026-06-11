@@ -119,13 +119,15 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 |---------|---------|-------|
 | `get/set repeat on\|off` | on | Turn off for observer mode |
 | `get/set flood.max <0-64>` | 64 | Cap flood hop count |
-| `get/set flood.max.unscoped <n>` | 0xFF (tracks flood.max) | Limit unscoped (no-region) floods |
+| `get/set flood.max.unscoped <0-64>` | 64 | Cap hop count for unscoped (no-region) floods (separate from `flood.max`) |
+| `get/set flood.max.advert <0-64>` | 8 | Cap hop count for ADVERT floods (separate from `flood.max`) |
 | `get/set dutycycle <1-100>` | 50 | % duty cycle limit |
+| `get/set rxdelay <0-20>` | — | Receive-window delay base |
 | `get/set txdelay <0-2>` | 0.5 | Flood retransmit jitter factor |
 | `get/set direct.txdelay <0-2>` | 0.2 | Direct traffic retransmit jitter |
 | `get/set loop.detect off\|minimal\|moderate\|strict` | off | Drop looped flood packets (v1.14+) |
 | `get/set path.hash.mode 0\|1\|2` | 0 | 1/2/3-byte advert path hash (v1.14+) |
-| `get/set flood.advert.interval <hours>` | 12 (repeater) | Flood advert timer |
+| `get/set flood.advert.interval <hours>` | 47 (repeater) | Flood advert timer |
 | `get/set advert.interval <minutes>` | 0 | Zero-hop advert timer |
 | `get/set agc.reset.interval <secs>` | 0 | Periodic AGC reset (deafness cure) |
 | `get/set int.thresh <value>` | 0 | Local interference threshold |
@@ -150,6 +152,17 @@ Quick patterns:
 # Define a region hierarchy
 region def Europe UK London|Europe France Paris
 region save
+```
+
+`region def` takes a list of space-separated **segments**. Each segment is a
+region name, optionally followed by a *jump* target: `name|jump` or `name,jump`
+(v1.16 accepts both `|` and `,` as the separator). Without a jump, the next
+segment nests under the one just defined; a jump repositions the cursor to an
+already-defined region so you can start a new branch. In the example above,
+`London|Europe` defines `London` under `UK`, then jumps the cursor back to
+`Europe` so `France` and `Paris` form a second branch.
+
+```
 
 # Allow a region's packets to flood
 region allowf Europe

@@ -209,7 +209,7 @@ The following are **plaintext on the wire** in all current packet types:
 | Header byte | Needed by every node to classify and route the packet |
 | Path field | Needed by each repeater to decide whether to forward |
 | `dest_hash` / `src_hash` (1 byte each) | Needed for routing lookups; only 1-byte prefix leaks |
-| ACK CRC | Intentional: ACKs are meant to be relayed freely; no sensitive data |
+| ACK hash | Intentional: ACKs are meant to be relayed freely; no sensitive data |
 | Advert payload | Intended to be publicly readable; protected by signature, not encryption |
 | Control / discovery packets | Designed for local broadcast; no sensitive data |
 

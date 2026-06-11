@@ -101,7 +101,7 @@ or when a repeater needs to announce its presence at startup and on its
 scheduled interval.
 
 !!! info "Automatic flood advert scheduling"
-    Repeaters send a flood advert automatically at startup and every 12 hours
+    Repeaters send a flood advert automatically at startup and every 47 hours
     by default (configurable with `set flood.advert.interval <hours>` via CLI).
     This ensures that new nodes joining the mesh can discover existing
     repeaters even if they weren't present during the last manual advert.

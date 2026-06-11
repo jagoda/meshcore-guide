@@ -58,7 +58,7 @@ A flood advert is relayed by every repeater that receives it, propagating
 across the entire reachable mesh. This is how nodes that are many hops apart
 learn of each other.
 
-**Repeaters** send a flood advert automatically every 12 hours (configurable
+**Repeaters** send a flood advert automatically every 47 hours (configurable
 with `set flood.advert.interval <hours>`). **Companions** can send a flood
 advert manually from the app.
 

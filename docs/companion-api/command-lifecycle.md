@@ -40,7 +40,7 @@ flowchart TD
 After connecting, always perform the full startup sequence before issuing any other commands:
 
 1. **`CMD_APP_START` (`0x01`)** — sends your app's name to the firmware and returns `PACKET_SELF_INFO` (`0x05`) with the node's public key, radio settings, and advertised name. Without this step the firmware does not know a client is present.
-2. **`CMD_DEVICE_QUERY` (`0x16 0x03`)** — returns `PACKET_DEVICE_INFO` with firmware version, max contacts, max channel slots, and model string. Used to adapt behaviour to firmware capabilities.
+2. **`CMD_DEVICE_QUERY` (`0x16 0x03`)** — returns `PACKET_DEVICE_INFO` with firmware version, the firmware's **protocol version code** (`FIRMWARE_VER_CODE`), max contacts, max channel slots, and model string. v1.16 firmware reports version code **13** (v1.15 was 11). Read this code to gate version-dependent features (see [v1.16 command additions](#v116-command-additions)) rather than assuming a capability is present.
 3. **`CMD_SET_DEVICE_TIME`** — synchronises the firmware clock. Outbound message timestamps use the firmware clock; a drifted clock means messages arrive with wrong timestamps on the mesh.
 4. **`CMD_GET_CONTACTS`** — fetches the full contact list. Returns a `PACKET_CONTACT_START`, one `PACKET_CONTACT` per contact, then `PACKET_CONTACT_END`.
 5. **`CMD_GET_CHANNEL` × N** — fetches each channel slot (index 0 through max_channels − 1). Returns `PACKET_CHANNEL_INFO` for each.
@@ -77,6 +77,28 @@ sequenceDiagram
         Node-->>App: PACKET_MSG or PACKET_OK (no more)
     end
 ```
+
+## v1.16 command additions
+
+These companion commands depend on the firmware's protocol version code (read it
+from `PACKET_DEVICE_INFO`; v1.16 reports **13**):
+
+- **`CMD_SEND_RAW_PACKET` (byte `65`)** — payload `[priority][raw packet bytes]`.
+  The firmware parses the supplied bytes with `tryParsePacket` and dispatches the
+  packet at the given priority. This is distinct from the existing
+  `CMD_SEND_RAW_DATA` (byte `25`), which wraps application data in a datagram —
+  `CMD_SEND_RAW_PACKET` injects an already-formed packet onto the mesh.
+- **Anonymous request to a non-contact node (ver 13+)** — `CMD_SEND_ANON_REQ`
+  against a bare public key that is not in the contact list now auto-creates a
+  *transient* `ADV_TYPE_NONE` contact from a separate pool (`MAX_ANON_CONTACTS = 8`).
+  When that pool is full the firmware returns `ERR_CODE_TABLE_FULL` (3), not
+  `ERR_CODE_NOT_FOUND`. Transient entries are not persisted across reboot.
+- **Explicit unscoped-flood override (ver 12+)** — `CMD_SET_FLOOD_SCOPE_KEY` with
+  sub-byte `1` sets the node to send unscoped floods; sub-byte `0` (optionally
+  followed by a 16-byte key) sets or clears the scope override.
+
+Gate each of these on the reported version code: a client talking to older
+firmware should fall back rather than send a command the node will reject.
 
 ## Timeout and error handling
 
