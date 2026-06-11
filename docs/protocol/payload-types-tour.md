@@ -162,6 +162,14 @@ derives the shared secret from the inline public key and validates the request,
 then adds the sender to its member list so future messages can use ECDH
 with the now-known public key.
 
+As of v1.16 (companion version code 13+), the *sender* side also relaxed: a
+companion app can issue an anonymous request to a node that is **not** in its
+contact list by supplying the target's bare public key. The firmware
+auto-creates a short-lived `ADV_TYPE_NONE` contact from a small separate pool
+(`MAX_ANON_CONTACTS = 8`) to carry the exchange; these transient entries are not
+persisted, and when the pool is full the firmware returns `ERR_CODE_TABLE_FULL`
+rather than `ERR_CODE_NOT_FOUND`.
+
 ---
 
 ### `PAYLOAD_TYPE_PATH` — Returned path
