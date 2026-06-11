@@ -16,7 +16,7 @@ Commands (app → node) and responses (node → app) share the same single-byte 
 
 The full packet type table — including all command bytes and all response codes — is in the [Companion Protocol spec](https://docs.meshcore.io/companion_protocol/) on docs.meshcore.io. Byte values are authoritative; symbolic names like `PACKET_OK` / `RESP_CODE_OK` / `PUSH_CODE_MSG_WAITING` are source-level aliases.
 
-The maximum companion protocol frame size is **176 bytes** (`MAX_FRAME_SIZE`). Commands that exceed this limit are rejected.
+The maximum companion protocol frame size is **176 bytes** (`MAX_FRAME_SIZE`). Commands that exceed this limit are rejected. (This grew from 172 bytes in earlier firmware: v1.16 added 4 bytes to accommodate the region-scoping transport codes.)
 
 ## BLE transport framing
 
