@@ -53,6 +53,14 @@ At 160 × 8 = 1280 bytes of RAM this fits even on nRF52840. Because the
 table is cyclic, very old hashes are eventually evicted, which is fine —
 a packet seen 160+ others ago is too old to re-process.
 
+!!! note "v1.16: ACKs dedup here too"
+    Earlier firmware kept a separate 64-entry table of ACK CRCs
+    (`MAX_PACKET_ACKS`). v1.16 removed it and grew this table from 128 to 160
+    entries. ACK packets now dedup through this same seen-packet table — the
+    [random byte appended to each 6-byte extended ACK](../protocol/payload-types-tour.md)
+    makes every ACK packet hash unique, so genuine retries are not mistaken for
+    duplicates.
+
 ## `routeRecvPacket()` — the routing decision
 
 After `hasSeen()` passes, `Mesh` decides what to do with the packet:
@@ -141,7 +149,7 @@ Packet* createAdvert(id, app_data, len);
 Packet* createDatagram(type, dest, secret, data, len);
 Packet* createAnonDatagram(type, sender, dest, secret, data, len);
 Packet* createGroupDatagram(type, channel, data, len);
-Packet* createAck(ack_crc);
+Packet* createAck(ack, len);          // v1.16: byte buffer + length (was a bare 4-byte CRC)
 Packet* createPathReturn(dest, secret, path, path_len, extra_type, extra, len);
 Packet* createRawData(data, len);
 Packet* createTrace(tag, auth_code, flags);
