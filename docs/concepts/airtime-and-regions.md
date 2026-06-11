@@ -71,7 +71,7 @@ MeshCore's architecture naturally limits airtime:
 - **Direct routing after path discovery.** Only 2–4 nodes transmit a
   direct-routed message vs. every repeater on the mesh for a flood.
 - **Advert intervals are configurable.** The repeater flood-advert interval
-  (default 12 h) keeps beacon traffic minimal.
+  (default 47 h as of v1.16) keeps beacon traffic minimal.
 
 ---
 
@@ -118,7 +118,10 @@ Good practices:
 
 - Place repeaters at elevation with a clear RF horizon, not in valleys where
   they hear too many nodes.
-- Tune `set flood.max <hops>` to limit how far channel floods propagate.
+- Tune `set flood.max <hops>` to limit how far channel floods propagate. v1.16
+  adds separate caps — `flood.max.unscoped` (default 64) for unscoped floods and
+  `flood.max.advert` (default 8) for advert floods — so you can rein in advert
+  storms without throttling ordinary channel traffic.
 - Use direct messaging (path-routed) wherever possible to minimise flood traffic.
 - Monitor airtime with an Observer node if you need metrics.
 

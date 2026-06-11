@@ -87,7 +87,7 @@ This is most effective on nRF52-based boards where sleep current can drop below 
 The periodic flood advert is a scheduled transmission. Lengthening the interval reduces transmit events:
 
 ```
-set flood.advert.interval 24    — advert once per day (saves airtime vs default 12 h)
+set flood.advert.interval 24    — advert once per day (saves airtime vs default 47 h)
 ```
 
 For solar+battery deployments where the repeater may sleep through the night, a 24-hour interval is reasonable.

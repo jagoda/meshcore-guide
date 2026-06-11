@@ -100,7 +100,9 @@ every node that knows the channel secret. There is no path to return; every
 channel message floods every time.
 
 Repeater operators can limit channel flooding with `set flood.max <hops>` to
-prevent channel traffic from consuming the entire mesh budget.
+prevent channel traffic from consuming the entire mesh budget. As of v1.16,
+unscoped floods and advert floods have their own separate caps
+(`flood.max.unscoped`, default 64, and `flood.max.advert`, default 8).
 
 See [Channels vs. Direct Messages](channels-vs-direct.md) for the full
 channel model.

@@ -87,7 +87,7 @@ Key behaviours:
   rebroadcasts it after a short randomised delay to reduce collisions.
 - **Forwards direct packets.** When a direct-routed packet lists this repeater's
   hash in its path, the repeater passes it along.
-- **Flood-adverts periodically.** By default every 12 hours, a repeater sends a
+- **Flood-adverts periodically.** By default every 47 hours, a repeater sends a
   flood advert so network participants can discover it and factor it into paths.
   The interval is configurable (`set flood.advert.interval <hours>`).
 - **Administrable remotely.** Via the companion app or CLI over USB, operators

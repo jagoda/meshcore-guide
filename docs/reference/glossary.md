@@ -155,11 +155,11 @@ The LoRa frequency plan for most of Europe (863–870 MHz, 1% duty cycle). Firmw
 **Flash advert** → see *Flood advert*
 
 **flood.max**
-A repeater CLI setting (`set flood.max <hops>`) that caps how many hops a channel flood is allowed to propagate through that node. Useful for containing community-channel traffic in dense meshes.
+A repeater CLI setting (`set flood.max <hops>`) that caps how many hops a channel flood is allowed to propagate through that node. Useful for containing community-channel traffic in dense meshes. As of v1.16, two companion settings cap specific flood classes separately: `flood.max.unscoped` (default 64, max 64) for unscoped/no-region floods and `flood.max.advert` (default 8, max 64) for advert floods.
 → [Channels vs. Direct](../concepts/channels-vs-direct.md), [Routing and Flooding](../protocol/routing-and-flooding.md)
 
 **Flood advert**
-An advert packet relayed by every repeater that receives it, propagating across the entire reachable mesh. Repeaters send one automatically every 12 hours (configurable). Companions can trigger a flood advert manually.
+An advert packet relayed by every repeater that receives it, propagating across the entire reachable mesh. Repeaters send one automatically every 47 hours by default (configurable). Companions can trigger a flood advert manually.
 → [Adverts and Contacts](../concepts/adverts-and-contacts.md), [Adverts Deep Dive](../protocol/adverts-deep-dive.md)
 
 **Flood routing**
@@ -417,7 +417,7 @@ The `src/helpers/RegionMap` helper class that manages named RF regions and their
 → [Codebase Map](../internals/codebase-map.md), [Regions and Frequencies](regions-and-frequencies.md)
 
 **Repeater**
-The infrastructure firmware role. A Repeater forwards packets (both flood and direct) but has no user messaging interface. Typically deployed at elevation. Sends flood adverts every 12 hours by default.
+The infrastructure firmware role. A Repeater forwards packets (both flood and direct) but has no user messaging interface. Typically deployed at elevation. Sends flood adverts every 47 hours by default.
 → [Nodes and Roles](../concepts/nodes-and-roles.md), [Running a Repeater](../operating/running-a-repeater.md)
 
 **Returned path**
