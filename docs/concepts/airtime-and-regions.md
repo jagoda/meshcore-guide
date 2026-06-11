@@ -43,6 +43,16 @@ A packet sent at SF12/BW125 can take **3–4 seconds on air**. The same packet a
 SF7/BW125 takes under 100 ms. Spreading factor has the largest single impact on
 airtime.
 
+!!! note "v1.16: SF-dependent preamble length"
+    Each LoRa frame is prefixed by a **preamble** that the receiver uses to lock
+    onto the signal. As of v1.16, MeshCore sizes the preamble by spreading
+    factor: **32 symbols for SF ≤ 8** and **16 symbols for SF > 8**
+    (`RadioLibWrappers::preambleLengthForSF`). The longer preamble at low SF
+    improves reliability for the short, fast packets that dominate at SF7–SF8;
+    higher-SF packets already spend long enough on air that a shorter preamble
+    is sufficient. The preamble adds a small fixed cost to every transmission's
+    airtime.
+
 !!! tip "MeshCore community recommendations (as of 2025)"
     Many regions have moved to narrower bandwidth settings — BW62.5 with SF7,
     SF8, or SF9 — after testing showed better SNR, lower noise floor, and

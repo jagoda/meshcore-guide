@@ -152,6 +152,17 @@ Quick patterns:
 # Define a region hierarchy
 region def Europe UK London|Europe France Paris
 region save
+```
+
+`region def` takes a list of space-separated **segments**. Each segment is a
+region name, optionally followed by a *jump* target: `name|jump` or `name,jump`
+(v1.16 accepts both `|` and `,` as the separator). Without a jump, the next
+segment nests under the one just defined; a jump repositions the cursor to an
+already-defined region so you can start a new branch. In the example above,
+`London|Europe` defines `London` under `UK`, then jumps the cursor back to
+`Europe` so `France` and `Paris` form a second branch.
+
+```
 
 # Allow a region's packets to flood
 region allowf Europe
