@@ -71,9 +71,20 @@ returns post count and membership state.
 
 ### `PAYLOAD_TYPE_ACK` — Acknowledgment
 
-The simplest payload type: a 4-byte CRC checksum of the original message
-(computed over its timestamp, text, and sender public key). Senders use this
-to confirm delivery.
+As of v1.16, a direct-message ACK is a **6-byte extended ACK**:
+
+- **Bytes 0–3** — a truncated SHA-256 hash of the original message
+  (computed over its timestamp, text, and sender public key). This is the proof
+  of delivery the sender matches against.
+- **Byte 4** — the message **attempt number**, so a retried send and its ACK
+  stay correlated.
+- **Byte 5** — a **random byte**, so each ACK packet hashes uniquely (see the
+  dedup note in [Mesh and Tables](../internals/mesh-and-tables.md)).
+
+ACK payloads are variable-length on the wire; `createAck(buf, len)` /
+`createMultiAck(buf, len, remaining)` carry the byte buffer and its length.
+(Earlier firmware used a bare 4-byte CRC; the 4-byte hash still forms the
+delivery proof, now followed by the attempt and random bytes.)
 
 ACKs travel **directly** when the return path is known. They are also
 propagated as floods if no path is available. The `multipart` ACK variant
@@ -81,7 +92,7 @@ propagated as floods if no path is available. The `multipart` ACK variant
 transmission.
 
 Because ACKs are unencrypted, any node can receive and forward them — the
-CRC alone does not reveal message content.
+hash alone does not reveal message content.
 
 ---
 
@@ -187,8 +198,8 @@ repeater placement.
 A wrapper type that allows large payloads to be split across multiple radio
 transmissions. The first byte of the payload encodes the number of remaining
 packets in the sequence (upper 4 bits) and the inner payload type (lower 4
-bits). Currently used for **multi-ACK** — bundling several ACK CRCs into one
-frame to reduce airtime.
+bits). Currently used for **multi-ACK** — bundling several variable-length
+ACK payloads into one frame to reduce airtime.
 
 ---
 

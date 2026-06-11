@@ -7,7 +7,7 @@ Every term introduced in the MeshCore Guide narrative, alphabetical. Each entry 
 ## A
 
 **ACK (acknowledgement)**
-A `PAYLOAD_TYPE_ACK` packet sent by the recipient's node after it successfully decrypts and delivers a direct message; contains a 4-byte CRC of the original message so the sender can confirm delivery.
+A `PAYLOAD_TYPE_ACK` packet sent by the recipient's node after it successfully decrypts and delivers a direct message. As of v1.16 it is a 6-byte extended ACK: a 4-byte truncated SHA-256 of the original message (timestamp + text + sender public key), followed by the attempt number and a random byte that makes each ACK packet hash uniquely. The sender matches the 4-byte hash to confirm delivery.
 → [Packet Journey](../protocol/packet-journey.md), [Payload Types Tour](../protocol/payload-types-tour.md)
 
 **Admin password**
@@ -329,7 +329,7 @@ A single byte in the packet header that encodes both the hash-size convention (1
 → [Packet Anatomy](../protocol/packet-anatomy.md)
 
 **PAYLOAD_TYPE_ACK**
-Protocol constant (`0x03`): delivery acknowledgement. Contains a 4-byte CRC of the original message. Unencrypted; any node can forward it.
+Protocol constant (`0x03`): delivery acknowledgement. As of v1.16 the direct-message ACK is 6 bytes — a 4-byte truncated SHA-256 of the original message plus an attempt byte and a random byte. Unencrypted; any node can forward it.
 → [Payload Types Tour](../protocol/payload-types-tour.md)
 
 **PAYLOAD_TYPE_ADVERT**

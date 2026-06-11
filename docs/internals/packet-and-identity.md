@@ -60,7 +60,7 @@ uint8_t getPayloadVer()  const { return (header >> PH_VER_SHIFT) & PH_VER_MASK; 
 | `PAYLOAD_TYPE_REQ` | `0x00` | Encrypted request to a known peer |
 | `PAYLOAD_TYPE_RESPONSE` | `0x01` | Encrypted response |
 | `PAYLOAD_TYPE_TXT_MSG` | `0x02` | Encrypted text message |
-| `PAYLOAD_TYPE_ACK` | `0x03` | Simple acknowledgement (CRC of acked packet) |
+| `PAYLOAD_TYPE_ACK` | `0x03` | Acknowledgement (6-byte extended ACK: hash + attempt + random) |
 | `PAYLOAD_TYPE_ADVERT` | `0x04` | Node advertisement (public key, name, capabilities) |
 | `PAYLOAD_TYPE_GRP_TXT` | `0x05` | Encrypted group text message |
 | `PAYLOAD_TYPE_GRP_DATA` | `0x06` | Encrypted group datagram |
