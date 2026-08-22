@@ -142,6 +142,12 @@ Once the room server is in your contact list and you have the admin password:
 
 Most configuration commands that work at the serial console also work remotely. Exceptions (serial-only) are noted in the [CLI Commands spec](https://docs.meshcore.io/cli_commands/) on docs.meshcore.io.
 
+!!! note "v1.17: DIRECT logins can reply via the stored out_path"
+    A DIRECT anonymous login (admin or room-user) that arrives with no
+    supplied return path can now reply along a previously-stored `out_path`
+    for that client, rather than falling back to a flood. See
+    [Routing and Flooding § Reply routing and reply scope](../protocol/routing-and-flooding.md#reply-routing-and-reply-scope-v117).
+
 ---
 
 ## Key CLI commands for room server operators

@@ -114,6 +114,16 @@ uint8_t getPathHashCount() const { return path_len & 63; }
 uint8_t getPathByteLen()   const { return getPathHashCount() * getPathHashSize(); }
 ```
 
+!!! note "v1.17: path_length is now validated, not just parsed"
+    `Packet::isValidPathLen()` rejects a `path_length` encoding that either
+    claims the reserved hash-size code (`3` — i.e. bits 6–7 == `11`) or whose
+    decoded `hop_count × hash_size` exceeds `MAX_PATH_SIZE` (64 bytes). A
+    malformed `path_length` on a `PAYLOAD_TYPE_PATH` packet is now rejected
+    outright rather than parsed and acted on. The repeater's anon-request
+    handlers (regions, owner, clock) apply the same check and use the new
+    `Packet::writePath()` helper instead of a hand-rolled `memcpy` of the path
+    bytes.
+
 ---
 
 ## The path field

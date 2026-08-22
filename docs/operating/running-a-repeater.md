@@ -101,6 +101,14 @@ Once the repeater is in your contact list and you know the admin password:
 
 > **Freemium note:** Remote admin over RF has a wait-gate on the iOS/Android app — a one-time unlock removes it. The T-Deck requires a registration key for this feature. See [faq.md §3.1](https://docs.meshcore.io/faq/) for details.
 
+!!! note "v1.17: DIRECT admin logins can reply via the stored out_path"
+    A companion app's anonymous admin login arrives as a DIRECT packet. As of
+    v1.17, if the repeater already has a stored `out_path` for that client
+    from an earlier exchange, it replies along that stored path
+    (`REPLY_ROUTE_DIRECT_OUT_PATH`) even when the current request didn't
+    itself supply a return path — see
+    [Routing and Flooding § Reply routing and reply scope](../protocol/routing-and-flooding.md#reply-routing-and-reply-scope-v117).
+
 ---
 
 ## Key CLI commands for repeater operators
@@ -155,6 +163,18 @@ floods are limited by `flood.max.unscoped` (default 64) and ADVERT floods by
 `flood.max.advert` (default 8). `flood.max` remains the overall flood-hop cap.
 Lowering `flood.max.advert` is the cheapest way to keep advert storms local
 without throttling ordinary traffic.
+
+!!! note "v1.17: fixed a reply-drop interaction with a low flood.max.unscoped"
+    Before v1.17, a repeater with `flood.max.unscoped` set low (e.g. `0`)
+    would silently swallow replies whose requester scope could not be
+    resolved — those replies were sent un-scoped and then dropped by this
+    node's own low cap, with nothing visible to the client. v1.17 sends that
+    reply under the node's default region scope instead, so it is no longer
+    subject to `flood.max.unscoped` at all. If you previously worked around
+    dropped replies by raising `flood.max.unscoped`, you can now set it back
+    down. See [Routing and Flooding § Reply routing and reply
+    scope](../protocol/routing-and-flooding.md#reply-routing-and-reply-scope-v117)
+    for the full decision table.
 
 ### Path hash size (firmware ≥ 1.14)
 

@@ -253,6 +253,55 @@ reached only via flood), they also travel as floods.
 
 ---
 
+## Reply routing and reply scope (v1.17)
+
+A server-role node (repeater, room server) that answers a request must decide
+two things independently: **how** to route the reply back, and — if the reply
+has to flood — **under what scope**. v1.17 extracts both decisions into
+explicit, testable policy (`src/helpers/RoutingPolicy.h`); the behaviour was
+previously scattered across ad-hoc conditionals in each server's `MyMesh.cpp`.
+
+**The operator-visible consequence first:** a repeater running
+`flood.max.unscoped=0` used to silently swallow certain replies — client
+requests that arrived without a resolvable region scope got a reply sent
+un-scoped, which such a repeater's own hop-limit-0 policy then dropped at hop
+0, with no error visible to the client. v1.17 fixes this by sending that reply
+under the node's **default region scope** instead of un-scoped, so it is no
+longer subject to the operator's `flood.max.unscoped` cap. See
+[Running a Repeater § Routing tuning](../operating/running-a-repeater.md) for
+the operator-facing cap this interacts with.
+
+### `chooseReplyRoute()` — how to send the reply
+
+| Condition | Route | Meaning |
+|---|---|---|
+| Request arrived as a flood | `REPLY_ROUTE_PATH_RETURN` | Reply as a PATH return, flooded back |
+| Request carried an explicit reply path | `REPLY_ROUTE_DIRECT_SUPPLIED` | Reply DIRECT along that supplied path |
+| No supplied path, but the server already has a stored `out_path` for this client | `REPLY_ROUTE_DIRECT_OUT_PATH` | Reply DIRECT along the stored `out_path` — **new in v1.17** |
+| None of the above | `REPLY_ROUTE_FLOOD` | Flood the reply — no return path is known |
+
+The `REPLY_ROUTE_DIRECT_OUT_PATH` case is the new one: a DIRECT anonymous
+login can now reply via the client's previously-stored `out_path`, rather than
+falling all the way back to a flood when no path was supplied on this
+particular request.
+
+### `chooseReplyScope()` — what scope a flooded reply uses
+
+| Condition | Scope | Meaning |
+|---|---|---|
+| Request arrived scoped, and its Region's key resolved | `REPLY_SCOPE_REQUEST` | Re-use the scope the request arrived on |
+| Request arrived as an un-scoped flood | `REPLY_SCOPE_NONE` | Mirror the requester's choice — send un-scoped |
+| Scope is otherwise unknowable, but the node has a default Region with a usable key | `REPLY_SCOPE_DEFAULT` | **New in v1.17** — send under the node's default region scope instead of un-scoped |
+| None of the above | `REPLY_SCOPE_NONE` | Send un-scoped (`ROUTE_TYPE_FLOOD`) |
+
+`isFloodHopLimitExceeded()` — the function that checks a flood packet against
+`flood.max`, `flood.max.unscoped`, and `flood.max.advert` — is a v1.17
+extraction of logic that already existed; its semantics are unchanged, only
+its shape (a single reusable function instead of inline checks at each call
+site).
+
+---
+
 ## What's next
 
 - [Encryption on the Wire](encryption-on-the-wire.md) — what intermediate
