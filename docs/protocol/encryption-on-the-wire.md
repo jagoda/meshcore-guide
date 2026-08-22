@@ -198,6 +198,16 @@ valid (the signature covers the original timestamp), but receivers that already
 hold a newer-timestamped advert for that public key can detect and ignore stale
 replays.
 
+!!! note "v1.17: hardware-accelerated verify on nRF52840 (CC310)"
+    On boards with the nRF52840's CryptoCell CC310 co-processor,
+    `Identity::verify()` (and SHA-256/AES/HMAC elsewhere in the stack) can run
+    through the hardware unit (`USE_CC310_HW_CRYPTO`) instead of a software
+    library. The algorithms and the bytes on the wire are unchanged — this is
+    purely an implementation swap, motivated by software Ed25519 verify's
+    ~3 KB stack cost risking overflow on advert-heavy nodes. See [Identity and
+    Encryption § Advert signing](../concepts/identity-and-encryption.md) for
+    the full rationale.
+
 ---
 
 ## What is NOT protected

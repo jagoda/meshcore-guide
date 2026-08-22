@@ -26,6 +26,32 @@ Common entry-level devices that work well:
     New devices are added regularly. This table is illustrative; the flasher at
     [meshcore.io/flasher](https://meshcore.io/flasher) is always current.
 
+### New in v1.17
+
+Eight new board variants, and a new radio family — **LR2021** — alongside the
+existing SX1262 / SX1268 / LR1110 / LLCC68 chips:
+
+| Device | Radio chip | Notes |
+|--------|-----------|-------|
+| Heltec RC32 | SX1262 | |
+| Heltec Tower V2 | SX1262 | |
+| Heltec V4 R8 | SX1262 | |
+| Meshnology W12 | **LR2021** | |
+| MeshTracker X1 | **LR2021** | |
+| Nibble Zero Connect | SX1262 | |
+| ThinkNode M7 | LR1110 | |
+| ThinkNode M9 | LR1110 | |
+
+Existing hardware also changed: **Station G3** gains `LoRaFEMControl` — see
+[Remote Admin CLI](../operating/remote-admin-cli.md) for the `radio.fem.rxgain`
+/ `radio.fem.txgain` commands it enables, and [Boards & HAL](../internals/boards-and-hal.md)
+for the `MainBoard` FEM hooks a board opts into.
+
+`cad` (hardware Channel Activity Detection) works on any RadioLib-backed
+radio family via the generic `scanChannel()` API, not just LR2021. `extra.sf`
+(simultaneous side-detector reception) **is** LR2021-only — it needs multiple
+independent detector chains that only the LR2021 exposes.
+
 ### Wired backhaul: Ethernet (v1.17)
 
 If you need a fixed-install repeater, room server, or companion radio with a

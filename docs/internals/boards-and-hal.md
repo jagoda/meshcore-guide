@@ -49,6 +49,30 @@ Two startup reasons are defined:
 Applications check `board.getStartupReason()` to decide whether to send an
 initial advertisement or skip straight to listening.
 
+### FEM (front-end module) hooks (v1.17)
+
+`MainBoard` gained six new virtual hooks (`src/MeshCore.h:67-73`) for boards
+with an external LoRa FEM (LNA on receive, PA gain switch on transmit):
+
+```cpp
+virtual bool setLoRaFemLnaEnabled(bool enable) { return false; }
+virtual bool canControlLoRaFemLna() const { return false; }
+virtual bool isLoRaFemLnaEnabled() const { return false; }
+virtual bool setLoRaFemPaGainEnabled(bool enable) { return false; }
+virtual bool canControlLoRaFemPaGain() const { return false; }
+virtual bool isLoRaFemPaGainEnabled() const { return false; }
+```
+
+The default bodies all return `false` — a board **opts in** by overriding
+them (Station G3's `LoRaFEMControl` is the first implementation). `CommonCLI`
+checks `canControlLoRaFem{Lna,PaGain}()` before honouring `radio.fem.rxgain` /
+`radio.fem.txgain`; a board that hasn't overridden the hooks gets `Error:
+unsupported` from the CLI rather than a hook call that silently no-ops. See
+[Remote Admin CLI § Radio configuration](../operating/remote-admin-cli.md)
+for the CLI-level behaviour and [What You Need § New in
+v1.17](../getting-started/what-you-need.md#new-in-v117) for which boards
+implement it today.
+
 ## `RTCClock` — the wall-clock interface
 
 ```cpp
