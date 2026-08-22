@@ -62,6 +62,10 @@ A shell wrapper around PlatformIO CLI that lists available build targets, compil
 
 ## C
 
+**CAD (Channel Activity Detection)**
+Hardware scan the radio performs before transmitting, deferring TX if the channel is already busy. `get/set cad on|off`, default off, added v1.17. Runs independently of `int.thresh` — either, both, or neither may be active. Not available on companion firmware until CAD is made configurable there.
+→ [Remote Admin CLI](../operating/remote-admin-cli.md)
+
 **CayenneLPP**
 A compact, self-describing binary format used by MeshCore sensor nodes to encode telemetry readings (temperature, humidity, GPS, voltage, etc.). Sensor nodes return CayenneLPP frames in response to `PAYLOAD_TYPE_REQ` stats requests.
 → [Sensors and Telemetry](../operating/sensors-and-telemetry.md), [Custom Sensor](../extending/custom-sensor.md)
@@ -151,6 +155,10 @@ The LoRa frequency plan for most of Europe (863–870 MHz, 1% duty cycle). Firmw
 ---
 
 ## F
+
+**FEM (Front-End Module) gain**
+External LoRa LNA/PA hardware present on some boards (e.g. Station G3), controlled independently of the radio chip's own gain settings via `get/set radio.fem.rxgain on|off` and `get/set radio.fem.txgain on|off` (v1.17, board-gated). On Station G3, TX gain requires removing the PA PL1 jumper for software control; the level applies at the start of the next TX rather than immediately, so `get` may report a state the hardware hasn't caught up to yet.
+→ [Remote Admin CLI](../operating/remote-admin-cli.md)
 
 **Flash advert** → see *Flood advert*
 

@@ -65,6 +65,7 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 |---------|-------------|
 | `reboot` | Restart the node |
 | `clkreboot` | Reset the clock then reboot |
+| `poweroff` / `shutdown` (v1.17) | Power the node down |
 | `clock sync` | Sync the node clock from the connecting companion |
 | `clock` | Display current UTC time on the node |
 | `time <epoch_seconds>` | Set the clock to a specific Unix timestamp |
@@ -72,6 +73,12 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 | `advert.zerohop` | Send a zero-hop (local-only) advert |
 | `start ota` | Initiate over-the-air firmware update |
 | `erase` | **Destructive** — factory reset (serial only) |
+
+!!! note "No reply is sent for reboot, clkreboot, poweroff, or shutdown"
+    All four commands make the firmware restart or power off before it can
+    send a CLI response — the command simply doesn't return. Don't wait on a
+    reply from any of them; confirm success by polling `ver` after a short
+    delay instead.
 
 ### Info
 
@@ -110,7 +117,11 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 | `set radio <freq>,<bw>,<sf>,<cr>` | Change all radio params | Reboot to apply |
 | `get tx` / `set tx <dbm>` | TX power in dBm | Reboot to apply; check board limits |
 | `get freq` / `set freq <MHz>` | Frequency only | Serial-only for set |
-| `get radio.rxgain` / `set radio.rxgain on\|off` | Boosted RX gain (SX12xx, v1.14.1+) | Default: on |
+| `get radio.rxgain` / `set radio.rxgain on\|off` | Boosted RX gain (SX12xx and LR1110, v1.14.1+) | Default: on. No longer compile-gated (v1.17) — replies `Error: unsupported` on radios that lack it, rather than being absent from the CLI entirely |
+| `get/set cad on\|off` (v1.17) | Hardware Channel Activity Detection scan before TX; defers if the channel is busy | Default: **off**. Runs independently of `int.thresh` — either, both, or neither may be active. **Not available on companion firmware** until CAD is made configurable there |
+| `get/set radio.fem.rxgain on\|off` (v1.17) | External LoRa FEM receive-path LNA, board-gated | Separate from `radio.rxgain` (radio-chip gain, not the external FEM). `Error: unsupported` on boards without an FEM |
+| `get/set radio.fem.txgain on\|off` (v1.17) | External LoRa FEM transmit-path gain, board-gated | On Station G3: remove the PA PL1 jumper for software control; `on` = PL1 high/short, `off` = PL1 low/open — the PL2 hardware jumper picks which power-level pair this switches between. The level is applied at the **start of the next TX**, not immediately, so `get` reports the *configured* state, which may lead the hardware until the node next transmits |
+| `get/set extra.sf <sf>[,<sf>[,<sf>]]` (v1.17) | Up to 3 side-detector spreading factors for simultaneous extra-SF reception | **LR2021 radio only** — compiled out (and CLI-absent) on other radio families |
 | `tempradio <f>,<bw>,<sf>,<cr>,<mins>` | Temporary radio params | Reverts on reboot |
 
 ### Routing configuration
@@ -198,6 +209,10 @@ get pwrmgt.source       — "battery" or "external"
 get pwrmgt.bootreason   — reset and shutdown reason strings
 get pwrmgt.bootmv       — boot voltage in millivolts
 ```
+
+`get pwrmgt.bootreason` is no longer nRF52-gated as of v1.17 — earlier
+firmware returned `ERROR: Power management not supported` on non-nRF52
+boards; it now reports the reset/shutdown reason on any board.
 
 See [Power & Battery](power-and-battery.md) and the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/) for context.
 
