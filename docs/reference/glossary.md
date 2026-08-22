@@ -15,7 +15,7 @@ A password that must be supplied before a CLI client can issue administrative co
 → [Running a Repeater](../operating/running-a-repeater.md)
 
 **Advert / Advertisement**
-A signed broadcast packet (`PAYLOAD_TYPE_ADVERT`) that contains a node's Ed25519 public key, name, type, timestamp, and optional GPS coordinates. Receiving nodes store adverts to build their contact list. Every advert is signed so it cannot be forged.
+A signed broadcast packet (`PAYLOAD_TYPE_ADVERT`) that contains a node's Ed25519 public key, name, type, timestamp, and optional GPS coordinates. Receiving nodes store adverts to build their contact list. Every advert is signed so it cannot be forged. The advertised name budget is 23 bytes with location, 31 bytes without (derived from the 32-byte `app_data` field), truncated at a UTF-8 code-point boundary as of v1.17.
 → [Adverts and Contacts](../concepts/adverts-and-contacts.md), [Adverts Deep Dive](../protocol/adverts-deep-dive.md)
 
 **AES-128**

@@ -108,7 +108,7 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 | `board` | Hardware board name |
 | `get role` | Node role (repeater / room_server / sensor) |
 | `get public.key` | Node's public key (hex) |
-| `get name` | Current node name |
+| `get name` / `set name <name>` | Node name advertised on the mesh | Budget: 23 bytes with location, 31 without (32-byte `app_data` minus flags minus lat/lon); truncated at a UTF-8 code-point boundary, never mid-character (v1.17) |
 | `get owner.info` | Owner info text |
 
 ### Statistics (serial only)

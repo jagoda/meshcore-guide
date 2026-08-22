@@ -65,6 +65,23 @@ The optional fields follow in this order when their flag bit is set:
 it back. Both are straightforward serialisers; the firmware uses them rather
 than writing ad hoc byte manipulation.
 
+### Name budget: 23 bytes with location, 31 without
+
+`app_data` is capped at `MAX_ADVERT_DATA_SIZE` = **32 bytes** total. The name
+gets whatever remains after the flags byte and any optional fields ahead of
+it: 32 − 1 (flags) − 8 (lat/lon, if present) = **23 bytes** with location, or
+32 − 1 = **31 bytes** without. (Feature 1/2 are reserved and currently
+unused, so they don't reduce the budget in practice today.)
+
+!!! note "v1.17: UTF-8-safe truncation"
+    Earlier firmware truncated the name at a raw byte count, which could cut
+    a multi-byte UTF-8 character in half and corrupt it. v1.17's
+    `validUtf8PrefixLength()` (`src/helpers/UTF8Helpers.h`) truncates at the
+    last complete code-point boundary that fits the budget instead — an emoji
+    or accented character either fits whole or is dropped, never split.
+    Emoji and non-ASCII characters can take up to 4 bytes each, so the
+    effective character count is lower than the byte budget suggests.
+
 !!! example "Encoding a repeater with a name and location"
     A repeater named "Summit R1" at 37.422°N, 122.084°W would produce an
     app-data byte sequence of:
