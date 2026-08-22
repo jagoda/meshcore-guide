@@ -86,6 +86,8 @@ None are required by the core — you can substitute your own.
 | `ArduinoHelpers.h` | `ArduinoMillis` (wraps `millis()`), `StdRNG` (wraps `random()`) |
 | `ArduinoSerialInterface.{h,cpp}` | Framed serial/BLE command interface for companion-radio |
 | `BaseSerialInterface.h` | Abstract base for the serial interface |
+| `MultiSerialInterface.h` | v1.17: multiplexes up to 4 transports (BLE/USB/WiFi/Ethernet) behind one `BaseSerialInterface` |
+| `ethernet/` | v1.17: Ethernet transport (RAK4631 + RAK13800/W5100S) — DHCP, raw-TCP CLI (port 23), companion-over-Ethernet (port 5000) |
 | `BaseChatMesh.{h,cpp}` | Contact list, message queue, ACK tracking — used by companion_radio |
 | `CommonCLI.{h,cpp}` | Admin CLI command parser (used by repeater, room server, sensor) |
 | `ClientACL.{h,cpp}` | Authorised-client list for admin commands |
