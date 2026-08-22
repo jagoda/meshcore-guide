@@ -15,7 +15,7 @@ A password that must be supplied before a CLI client can issue administrative co
 → [Running a Repeater](../operating/running-a-repeater.md)
 
 **Advert / Advertisement**
-A signed broadcast packet (`PAYLOAD_TYPE_ADVERT`) that contains a node's Ed25519 public key, name, type, timestamp, and optional GPS coordinates. Receiving nodes store adverts to build their contact list. Every advert is signed so it cannot be forged.
+A signed broadcast packet (`PAYLOAD_TYPE_ADVERT`) that contains a node's Ed25519 public key, name, type, timestamp, and optional GPS coordinates. Receiving nodes store adverts to build their contact list. Every advert is signed so it cannot be forged. The advertised name budget is 23 bytes with location, 31 bytes without (derived from the 32-byte `app_data` field), truncated at a UTF-8 code-point boundary as of v1.17.
 → [Adverts and Contacts](../concepts/adverts-and-contacts.md), [Adverts Deep Dive](../protocol/adverts-deep-dive.md)
 
 **AES-128**
@@ -61,6 +61,10 @@ A shell wrapper around PlatformIO CLI that lists available build targets, compil
 ---
 
 ## C
+
+**CAD (Channel Activity Detection)**
+Hardware scan the radio performs before transmitting, deferring TX if the channel is already busy. `get/set cad on|off`, default off, added v1.17. Runs independently of `int.thresh` — either, both, or neither may be active. Not available on companion firmware until CAD is made configurable there.
+→ [Remote Admin CLI](../operating/remote-admin-cli.md)
 
 **CayenneLPP**
 A compact, self-describing binary format used by MeshCore sensor nodes to encode telemetry readings (temperature, humidity, GPS, voltage, etc.). Sensor nodes return CayenneLPP frames in response to `PAYLOAD_TYPE_REQ` stats requests.
@@ -151,6 +155,10 @@ The LoRa frequency plan for most of Europe (863–870 MHz, 1% duty cycle). Firmw
 ---
 
 ## F
+
+**FEM (Front-End Module) gain**
+External LoRa LNA/PA hardware present on some boards (e.g. Station G3), controlled independently of the radio chip's own gain settings via `get/set radio.fem.rxgain on|off` and `get/set radio.fem.txgain on|off` (v1.17, board-gated). On Station G3, TX gain requires removing the PA PL1 jumper for software control; the level applies at the start of the next TX rather than immediately, so `get` may report a state the hardware hasn't caught up to yet.
+→ [Remote Admin CLI](../operating/remote-admin-cli.md)
 
 **Flash advert** → see *Flood advert*
 

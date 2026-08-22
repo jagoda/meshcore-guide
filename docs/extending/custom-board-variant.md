@@ -164,6 +164,18 @@ mesh::LocalIdentity radio_new_identity() {
 Consult `variants/heltec_v3/target.cpp` or `variants/rak4631/target.cpp` for
 complete, board-specific examples of display setup, GPIO bring-up, and GPS init.
 
+!!! note "Board with an external LoRa FEM? Override the FEM hooks (v1.17)"
+    If your board has an external LoRa front-end module (LNA on RX, gain
+    switch on TX), override `MainBoard`'s FEM hooks in your board's concrete
+    class — `setLoRaFemLnaEnabled()` / `canControlLoRaFemLna()` /
+    `isLoRaFemLnaEnabled()` and the `PaGain` equivalents
+    (`src/MeshCore.h:67-73`). The default bodies all return `false`, which is
+    correct for a board with no FEM — a board that doesn't override them gets
+    `Error: unsupported` from `radio.fem.rxgain`/`radio.fem.txgain` rather
+    than a hook call that silently no-ops. `variants/station_g3_esp32/LoRaFEMControl.h`
+    is a worked example. See [Boards & HAL § FEM
+    hooks](../internals/boards-and-hal.md).
+
 ## Step 3 — Build and iterate
 
 ```bash

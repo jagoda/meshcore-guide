@@ -135,6 +135,14 @@ Good practices:
 - Use direct messaging (path-routed) wherever possible to minimise flood traffic.
 - Monitor airtime with an Observer node if you need metrics.
 
+!!! note "v1.17: replies with an unknowable scope now use the node's default region"
+    A server-role node (repeater, room server) answering a request whose
+    scope it cannot resolve used to flood the reply un-scoped — which a
+    tightly-capped `flood.max.unscoped` would then drop. v1.17 sends that
+    reply under the node's own default Region scope instead, so it survives
+    a low `flood.max.unscoped` cap. See [Routing and Flooding § Reply routing
+    and reply scope](../protocol/routing-and-flooding.md#reply-routing-and-reply-scope-v117).
+
 ---
 
 ## What's next

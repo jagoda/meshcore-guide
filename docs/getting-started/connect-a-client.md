@@ -58,6 +58,27 @@ Pick the client that fits your platform:
     variant's `platformio.ini`). This is an advanced option; for getting started,
     use BLE or USB instead.
 
+=== "Ethernet (TCP) (v1.17)"
+    Requires **RAK4631 + RAK13800** hardware flashed with an `_ethernet`
+    firmware variant — see [What You Need § Wired
+    backhaul](what-you-need.md#wired-backhaul-ethernet-v117).
+
+    1. Connect the Ethernet cable to a network with a DHCP server; the device
+       obtains an IP address automatically on boot.
+    2. **`RAK_4631_companion_radio_ethernet`** — connect the app on **TCP port
+       5000** (the same port the Wi-Fi companion uses). Ethernet **replaces
+       BLE** on this firmware — there is no Bluetooth fallback.
+    3. **`RAK_4631_repeater_ethernet`** / **`RAK_4631_room_server_ethernet`** —
+       these expose CLI access over raw TCP on **port 23** (`nc <ip> 23` or a
+       raw-mode terminal), not the companion app. Use `eth.status` at the CLI
+       to confirm the assigned IP.
+
+    !!! warning "No DHCP fallback"
+        If your network has no DHCP server, the device will not obtain an
+        address and Ethernet access will not come up. See
+        [Troubleshooting](../operating/troubleshooting.md) for the no-DHCP /
+        can't-reach-port-23 symptom.
+
 ---
 
 ## Step 3 — Set your region and frequency

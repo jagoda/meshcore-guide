@@ -1,9 +1,10 @@
 # Remote Admin CLI
 
-Every MeshCore infrastructure node — repeater, room server, sensor — responds to a command-line interface (CLI). You can reach this CLI in two ways:
+Every MeshCore infrastructure node — repeater, room server, sensor — responds to a command-line interface (CLI). You can reach this CLI in three ways:
 
 - **Locally**, via USB serial (picocom, the web flasher console, or config.meshcore.io).
 - **Remotely**, over the mesh via the companion app's **Admin** tab.
+- **Over Ethernet** (v1.17, RAK4631 + RAK13800 hardware only) — a wired TCP alternative to the two above.
 
 This page explains both access paths, the command categories, and how to work safely on a live node. For the exhaustive command reference, see the [CLI Commands spec](https://docs.meshcore.io/cli_commands/) and the [Terminal Chat CLI spec](https://docs.meshcore.io/terminal_chat_cli/) on docs.meshcore.io.
 
@@ -35,6 +36,25 @@ Or use the browser-based console at [config.meshcore.io](https://config.meshcore
 !!! note "Freemium gate"
     Remote admin over RF has a wait-timer gate in the iOS/Android companion app. A one-time in-app purchase removes the wait. The T-Deck requires a registration key. Neither is needed for the core messaging experience.
 
+### Ethernet (TCP) (v1.17)
+
+On **RAK4631 + RAK13800** hardware flashed with an `_ethernet` firmware
+variant, DHCP assigns an IP address on boot. Repeater and room server
+firmware expose the same CLI over raw **TCP port 23** — connect with
+`nc <ip> 23` or a raw-mode terminal, no companion app involved. Check
+`eth.status` (repeater/room only) for connection state and assigned IP.
+
+Companion Ethernet firmware (`RAK_4631_companion_radio_ethernet`) works
+differently: Ethernet **replaces BLE** as the companion app's transport, on
+**TCP port 5000** (the same port the Wi-Fi companion firmware uses) — there
+is no raw CLI over Ethernet on companion firmware, and no BLE fallback once
+you've flashed the Ethernet variant.
+
+See [What You Need § Wired backhaul](../getting-started/what-you-need.md) and
+[Connect a Client](../getting-started/connect-a-client.md) for setup, and
+[Troubleshooting](troubleshooting.md) for no-DHCP / can't-reach-port-23
+symptoms.
+
 ### Web config UI
 
 [config.meshcore.io](https://config.meshcore.io) provides a form-based UI over USB serial — a friendlier alternative to raw CLI for initial configuration (name, frequency, password, location).
@@ -65,6 +85,7 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 |---------|-------------|
 | `reboot` | Restart the node |
 | `clkreboot` | Reset the clock then reboot |
+| `poweroff` / `shutdown` (v1.17) | Power the node down |
 | `clock sync` | Sync the node clock from the connecting companion |
 | `clock` | Display current UTC time on the node |
 | `time <epoch_seconds>` | Set the clock to a specific Unix timestamp |
@@ -72,6 +93,12 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 | `advert.zerohop` | Send a zero-hop (local-only) advert |
 | `start ota` | Initiate over-the-air firmware update |
 | `erase` | **Destructive** — factory reset (serial only) |
+
+!!! note "No reply is sent for reboot, clkreboot, poweroff, or shutdown"
+    All four commands make the firmware restart or power off before it can
+    send a CLI response — the command simply doesn't return. Don't wait on a
+    reply from any of them; confirm success by polling `ver` after a short
+    delay instead.
 
 ### Info
 
@@ -81,7 +108,7 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 | `board` | Hardware board name |
 | `get role` | Node role (repeater / room_server / sensor) |
 | `get public.key` | Node's public key (hex) |
-| `get name` | Current node name |
+| `get name` / `set name <name>` | Node name advertised on the mesh | Budget: 23 bytes with location, 31 without (32-byte `app_data` minus flags minus lat/lon); truncated at a UTF-8 code-point boundary, never mid-character (v1.17) |
 | `get owner.info` | Owner info text |
 
 ### Statistics (serial only)
@@ -110,7 +137,11 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 | `set radio <freq>,<bw>,<sf>,<cr>` | Change all radio params | Reboot to apply |
 | `get tx` / `set tx <dbm>` | TX power in dBm | Reboot to apply; check board limits |
 | `get freq` / `set freq <MHz>` | Frequency only | Serial-only for set |
-| `get radio.rxgain` / `set radio.rxgain on\|off` | Boosted RX gain (SX12xx, v1.14.1+) | Default: on |
+| `get radio.rxgain` / `set radio.rxgain on\|off` | Boosted RX gain (SX12xx and LR1110, v1.14.1+) | Default: on. No longer compile-gated (v1.17) — replies `Error: unsupported` on radios that lack it, rather than being absent from the CLI entirely |
+| `get/set cad on\|off` (v1.17) | Hardware Channel Activity Detection scan before TX; defers if the channel is busy | Default: **off**. Runs independently of `int.thresh` — either, both, or neither may be active. **Not available on companion firmware** until CAD is made configurable there |
+| `get/set radio.fem.rxgain on\|off` (v1.17) | External LoRa FEM receive-path LNA, board-gated | Separate from `radio.rxgain` (radio-chip gain, not the external FEM). `Error: unsupported` on boards without an FEM |
+| `get/set radio.fem.txgain on\|off` (v1.17) | External LoRa FEM transmit-path gain, board-gated | On Station G3: remove the PA PL1 jumper for software control; `on` = PL1 high/short, `off` = PL1 low/open — the PL2 hardware jumper picks which power-level pair this switches between. The level is applied at the **start of the next TX**, not immediately, so `get` reports the *configured* state, which may lead the hardware until the node next transmits |
+| `get/set extra.sf <sf>[,<sf>[,<sf>]]` (v1.17) | Up to 3 side-detector spreading factors for simultaneous extra-SF reception | **LR2021 radio only** — compiled out (and CLI-absent) on other radio families |
 | `tempradio <f>,<bw>,<sf>,<cr>,<mins>` | Temporary radio params | Reverts on reboot |
 
 ### Routing configuration
@@ -198,6 +229,10 @@ get pwrmgt.source       — "battery" or "external"
 get pwrmgt.bootreason   — reset and shutdown reason strings
 get pwrmgt.bootmv       — boot voltage in millivolts
 ```
+
+`get pwrmgt.bootreason` is no longer nRF52-gated as of v1.17 — earlier
+firmware returned `ERROR: Power management not supported` on non-nRF52
+boards; it now reports the reset/shutdown reason on any board.
 
 See [Power & Battery](power-and-battery.md) and the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/) for context.
 

@@ -146,7 +146,10 @@ Mesh → BaseChatMesh → MyMesh
   frames from the serial interface (`BaseSerialInterface`) and dispatches to
   mesh operations (send message, get contacts, set channels, etc.).
 - **`DataStore`**: persistent contact + channel + prefs storage backed by
-  LittleFS / SPIFFS.
+  LittleFS / SPIFFS. v1.17: preferences are now serialised as nested JSON to
+  `/prefs.json` via `ConfigSerializer`, migrated once from the legacy
+  `/new_prefs` binary file (which is deliberately left in place, not
+  deleted — see [Mesh & Tables § Preference storage](mesh-and-tables.md)).
 - **UI integration** (`AbstractUITask` / `UITask`): optional display and button
   handling for devices with a screen.
 

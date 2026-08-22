@@ -37,9 +37,9 @@ message), the firmware has no recorded path. It sends the packet as a **flood**:
 
 Flood routing would loop forever if there were no guard against rebroadcasting
 a packet you have already forwarded. MeshCore maintains a **seen-packet table**
-(`MeshTables::hasSeen()`). A repeater records the hash of each packet it
-forwards; if it receives the same packet again (from a different upstream
-repeater), it drops the duplicate silently.
+(`MeshTables::wasSeen()` / `markSeen()`). A repeater records the hash of each
+packet it forwards; if it receives the same packet again (from a different
+upstream repeater), it drops the duplicate silently.
 
 ---
 
@@ -124,7 +124,7 @@ sequenceDiagram
     A->>R3: FLOOD
     R1->>R2: relay (flood)
     R1-->>R3: relay heard by R3
-    Note over R3: hasSeen? YES — drop duplicate
+    Note over R3: wasSeen? YES — drop duplicate
     R2->>B: relay (flood) — delivered ✓
     B-->>A: PATH packet (path: R1→R2) — flood
     Note over A: Store path: R1 → R2

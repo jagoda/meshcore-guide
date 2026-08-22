@@ -186,6 +186,12 @@ originator so that future messages can use direct routing. The payload
 The sender stores this path and uses it for all subsequent direct messages to
 that peer, bypassing the need for a flood.
 
+!!! note "v1.17: path_length is validated on receipt"
+    A malformed `path_length` byte (see [Packet Anatomy § The path_length
+    byte](packet-anatomy.md#the-path_length-byte)) is now rejected rather
+    than parsed — `Packet::isValidPathLen()` checks it before the path is
+    used.
+
 ---
 
 ### `PAYLOAD_TYPE_TRACE` — SNR traceroute

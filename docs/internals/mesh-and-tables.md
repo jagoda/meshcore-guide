@@ -26,14 +26,32 @@ decision engine.
 ```cpp
 class MeshTables {
 public:
-  virtual bool hasSeen(const Packet* packet) = 0;
+  virtual bool wasSeen(const Packet* packet) = 0;
+  virtual void markSeen(const Packet* packet) = 0;
   virtual void clear(const Packet* packet) = 0;
 };
 ```
 
-`Mesh` calls `hasSeen()` before processing any flood packet. If `true`, the
+!!! note "v1.17: the old combined seen-check was split into `wasSeen()` + `markSeen()`"
+    Earlier firmware combined the query and the insert into a single
+    call — checking the table *also* recorded the packet as seen,
+    as a side effect. v1.17 splits this into a pure query (`wasSeen()`) and an
+    explicit insert (`markSeen()`), called separately at each of `Mesh`'s
+    ~14 dedup checkpoints, always in that order and always gated behind the
+    same forwarding decision (e.g. `allowPacketForward(pkt) && !wasSeen(pkt)`
+    → then `markSeen(pkt)`). The insert now happens **only after the packet
+    passes the process gate**, not on every lookup. This matters because
+    under the old combined call, a packet that failed a *later* validity
+    check (after the dedup check had already run) was still poisoned into the
+    table — a legitimate retransmission of that same packet would then be
+    silently dropped as a "duplicate" it was never actually processed.
+
+`Mesh` calls `wasSeen()` before processing any flood packet. If `true`, the
 packet is a duplicate (already seen via another route) and is dropped — the
 packet is released back to the pool without calling any `on…Recv()` callback.
+If `false`, `Mesh` calls `markSeen()` once the packet has cleared whatever
+gate applies at that call site (e.g. `allowPacketForward()`), recording it so
+a later duplicate is caught.
 
 `clear()` is called when the application wants to allow a future re-transmission
 of a packet it already processed (e.g. after a timed retry path).
@@ -45,9 +63,10 @@ The reference implementation in `src/helpers/SimpleMeshTables.h` uses a
 packet hash). The hash is computed over the packet's payload and type byte,
 making it unique per message content.
 
-When a new packet arrives, `hasSeen()` walks the table:
+When a new packet arrives, `wasSeen()` walks the table:
 - If found → duplicate; increment `_flood_dups` or `_direct_dups` and return `true`.
-- If not found → write hash at `_next_idx`, advance index modulo 160, return `false`.
+- If not found → return `false` (no side effect). A subsequent `markSeen()`
+  call writes the hash at `_next_idx` and advances the index modulo 160.
 
 At 160 × 8 = 1280 bytes of RAM this fits even on nRF52840. Because the
 table is cyclic, very old hashes are eventually evicted, which is fine —
@@ -63,7 +82,7 @@ a packet seen 160+ others ago is too old to re-process.
 
 ## `routeRecvPacket()` — the routing decision
 
-After `hasSeen()` passes, `Mesh` decides what to do with the packet:
+After `wasSeen()` passes (and `markSeen()` records it), `Mesh` decides what to do with the packet:
 
 ```mermaid
 flowchart TD
@@ -186,6 +205,48 @@ public:
 A `GroupChannel` is a lightweight struct. The hash is derived from the shared
 secret so all nodes with the same secret generate the same hash without
 coordination.
+
+## Preference storage: `/prefs.json` (v1.17)
+
+`CommonCLI` and `companion_radio`'s `DataStore` persist node preferences
+through `ConfigSerializer` (`src/helpers/ConfigSerializer.{h,cpp}`), a small
+nested-JSON reader/writer. As of v1.17 the on-disk format changed from a flat
+binary struct dump to `/prefs.json`:
+
+- **Repeater / room server / sensor** migrate their old `/com_prefs` binary
+  file on first boot after upgrading.
+- **Companion radio** migrates its old `/new_prefs` binary file the same way.
+- In **both** cases the legacy file is deliberately **not deleted** — the
+  `fs->remove(...)` call that would delete it is commented out in source. A
+  node downgraded back to v1.16 still finds its pre-upgrade prefs. See
+  [Daily Use](../operating/daily-use.md) for the operator-visible asymmetry
+  this creates.
+
+Key hierarchy (short-form keys, matching the JSON on disk):
+
+```
+name / pass / guest / owner / adv_int / f_adv_int / lat / lon
+radio{ freq bw sf cr cad int_thr rxgain fem_rxgain fem_txgain tx af
+       rxdelay f_txdelay d_txdelay agc_int hash_mode multi_ack }
+bridge{ en delay src baud ch secret }          # repeater/room/sensor only
+gps{ en int adv_loc }
+repeat{ disable f_max f_max_uns f_max_adv loop }
+room{ rd_only }                                 # room server only
+power{ adc_mult pwr_sav_en }                    # repeater/room/sensor only
+comp{ auto_max defs_nm defs_key pin buzz_q vibe_q auto_add man_add
+      tel_base tel_loc tel_env }                # companion only
+```
+
+Companion-only notes:
+
+- `client_repeat` is **deprecated** in favour of `repeat.disable` — this is a
+  *preference key* rename only; the companion protocol's `client_repeat`
+  *frame field* is unchanged.
+- `vibe_q` (`vibe_quiet`) is a new companion preference.
+- Companion FEM prefs (`fem_rxgain`/`fem_txgain`) are defined in code but
+  **not yet persisted** on companion firmware (guarded out with `#if 0`) —
+  don't expect a companion-radio FEM setting to survive a reboot yet, even
+  though the CLI accepts it.
 
 ## Key takeaways
 

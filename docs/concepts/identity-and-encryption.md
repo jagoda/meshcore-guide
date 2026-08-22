@@ -68,6 +68,18 @@ signature before storing the contact. A malicious node that replays or
 fabricates an advert cannot forge the signature without the matching private
 key.
 
+!!! note "v1.17: CC310 hardware crypto on nRF52840 (RAK boards)"
+    On nRF52840 boards with the CryptoCell CC310 co-processor,
+    `USE_CC310_HW_CRYPTO` routes SHA-256, AES, HMAC, and **Ed25519 signature
+    verification** through the hardware unit instead of a software library —
+    same algorithms, same wire bytes, only the implementation differs. The
+    motivation was a real stack-overflow bug: software Ed25519 verify needs
+    roughly 3 KB of stack, which could exhaust the Adafruit nRF52 core's 4 KB
+    loop-task stack when advert verification landed on the hot path; the
+    hardware path needs only ~600-700 bytes. This affects advert processing
+    performance and stack headroom, not the on-wire protocol or the trust
+    model described below.
+
 ---
 
 ## Direct message encryption (ECDH + AES-128)

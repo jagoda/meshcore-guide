@@ -64,7 +64,7 @@ LilyGo_T3S3_sx1262_kiss_modem
 Build and flash:
 
 ```bash
-export FIRMWARE_VERSION=v1.16.0
+export FIRMWARE_VERSION=v1.17.1
 sh build.sh build-firmware Heltec_v3_kiss_modem
 ```
 
@@ -93,6 +93,19 @@ modem->setGetStatsCallback(onGetStats);     // rx/tx/error counters
 
 This keeps radio hardware access decoupled from the KISS logic — useful if you
 port the modem to a new board.
+
+!!! note "v1.17: transmit backpressure — one pending packet, 2-slot outbound queue"
+    Only one packet may be pending radio transmission at a time; if the host
+    sends a second Data frame before the first completes, the modem replies
+    `Error (0xF1)` + `TxBusy (0x07)`. On the receive side, outbound frames
+    (responses, `TxDone`, `RxMeta`) now go through a 2-slot host-output queue
+    so `KissModem::loop()` never blocks on a slow serial write; `TxBusy`
+    (`0x07`) now means "radio TX busy **or** host output queue full" rather
+    than radio-busy alone. `TxDone` is retained (not dropped) until it can be
+    queued, so a slow host still eventually sees it, just delayed. `RxMeta`
+    (the SNR/RSSI companion frame) is queued alongside its data frame and
+    **omitted** if that data frame itself couldn't be queued — read serial
+    promptly if you rely on it.
 
 ## Connecting from a host application
 
