@@ -40,7 +40,7 @@ flowchart TD
 After connecting, always perform the full startup sequence before issuing any other commands:
 
 1. **`CMD_APP_START` (`0x01`)** — sends your app's name to the firmware and returns `PACKET_SELF_INFO` (`0x05`) with the node's public key, radio settings, and advertised name. Without this step the firmware does not know a client is present.
-2. **`CMD_DEVICE_QUERY` (`0x16 0x03`)** — returns `PACKET_DEVICE_INFO` with firmware version, the firmware's **protocol version code** (`FIRMWARE_VER_CODE`), max contacts, max channel slots, and model string. v1.16 firmware reports version code **13** (v1.15 was 11). Read this code to gate version-dependent features (see [v1.16 command additions](#v116-command-additions)) rather than assuming a capability is present.
+2. **`CMD_DEVICE_QUERY` (`0x16 0x03`)** — returns `PACKET_DEVICE_INFO` with firmware version, the firmware's **protocol version code** (`FIRMWARE_VER_CODE`), max contacts, max channel slots, and model string. **v1.16 and v1.17 firmware both report version code 13** (v1.15 was 11) — the companion wire protocol did not change between v1.16.0 and v1.17.1. Read this code to gate version-dependent features (see [companion protocol additions since v1.15](#companion-protocol-additions-since-v115)) rather than assuming a capability is present.
 3. **`CMD_SET_DEVICE_TIME`** — synchronises the firmware clock. Outbound message timestamps use the firmware clock; a drifted clock means messages arrive with wrong timestamps on the mesh.
 4. **`CMD_GET_CONTACTS`** — fetches the full contact list. Returns a `PACKET_CONTACT_START`, one `PACKET_CONTACT` per contact, then `PACKET_CONTACT_END`.
 5. **`CMD_GET_CHANNEL` × N** — fetches each channel slot (index 0 through max_channels − 1). Returns `PACKET_CHANNEL_INFO` for each.
@@ -78,10 +78,12 @@ sequenceDiagram
     end
 ```
 
-## v1.16 command additions
+## Companion protocol additions since v1.15
 
 These companion commands depend on the firmware's protocol version code (read it
-from `PACKET_DEVICE_INFO`; v1.16 reports **13**):
+from `PACKET_DEVICE_INFO`). They were introduced in the v1.16 cycle, when the
+version code moved from 11 to 13; **v1.17 reports the same code 13 and adds no
+further commands** — the companion wire protocol has been unchanged since v1.16.0:
 
 - **`CMD_SEND_RAW_PACKET` (byte `65`)** — payload `[priority][raw packet bytes]`.
   The firmware parses the supplied bytes with `tryParsePacket` and dispatches the
