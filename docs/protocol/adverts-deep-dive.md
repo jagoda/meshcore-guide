@@ -136,7 +136,7 @@ When a node receives a `PAYLOAD_TYPE_ADVERT` packet, the processing in
 2. **Not self** — if the public key matches the node's own `self_id`, discard.
    A node should not process its own flooded advert.
 
-3. **Not a duplicate** — check `_tables->hasSeen(pkt)`. If the same advert has
+3. **Not a duplicate** — check `_tables->wasSeen(pkt)`. If the same advert has
    already been processed (e.g., via a different path), skip processing but
    still relay.
 
@@ -151,7 +151,7 @@ flowchart TD
     LEN -- no --> DROP1["drop"]
     LEN -- yes --> SELF{"pub_key == self_id?"}
     SELF -- yes --> DROP2["drop — own advert reflected"]
-    SELF -- no --> DUP{"hasSeen(pkt)?"}
+    SELF -- no --> DUP{"wasSeen(pkt)?"}
     DUP -- yes --> RELAY["relay only\n(no contact update)"]
     DUP -- no --> SIG{"Identity::verify(signature)?"}
     SIG -- invalid --> DROP3["drop — forged or corrupted"]

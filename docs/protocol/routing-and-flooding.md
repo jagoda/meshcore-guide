@@ -30,7 +30,7 @@ secret.
 
 ```mermaid
 flowchart TD
-    recv["Receive packet"] --> seen{"hasSeen?\npacket hash in ring buffer"}
+    recv["Receive packet"] --> seen{"wasSeen?\npacket hash in ring buffer"}
     seen -- "yes — duplicate" --> drop1["Drop — release to pool"]
     seen -- no --> fwd{"allowPacketForward?\nrepeater firmware + hop limit"}
     fwd -- "no — companion or limit hit" --> local["Deliver locally\nonRecvPacket()"]
@@ -207,18 +207,30 @@ ring (A–B–C–A) would generate an infinite relay loop.
 hash is written to the next slot, evicting the oldest when the table is full.
 
 ```cpp
-// SimpleMeshTables::hasSeen() — simplified
-uint8_t hash[MAX_HASH_SIZE];
-packet->calculatePacketHash(hash);
-for (int i = 0; i < MAX_PACKET_HASHES; i++) {
-  if (memcmp(hash, &_hashes[i*MAX_HASH_SIZE], MAX_HASH_SIZE) == 0)
-    return true;  // already seen
+// SimpleMeshTables::wasSeen() / markSeen() — simplified
+bool wasSeen(packet) {
+  uint8_t hash[MAX_HASH_SIZE];
+  packet->calculatePacketHash(hash);
+  for (int i = 0; i < MAX_PACKET_HASHES; i++) {
+    if (memcmp(hash, &_hashes[i*MAX_HASH_SIZE], MAX_HASH_SIZE) == 0)
+      return true;  // already seen — pure query, no side effect
+  }
+  return false;
 }
-// new packet — record it
-memcpy(&_hashes[_next_idx*MAX_HASH_SIZE], hash, MAX_HASH_SIZE);
-_next_idx = (_next_idx + 1) % MAX_PACKET_HASHES;
-return false;
+void markSeen(packet) {
+  uint8_t hash[MAX_HASH_SIZE];
+  packet->calculatePacketHash(hash);
+  memcpy(&_hashes[_next_idx*MAX_HASH_SIZE], hash, MAX_HASH_SIZE);
+  _next_idx = (_next_idx + 1) % MAX_PACKET_HASHES;
+}
 ```
+
+!!! note "v1.17: split into `wasSeen()` + `markSeen()`"
+    Earlier firmware combined these into a single call that recorded
+    the packet as a side effect of the lookup. `Mesh` now calls `wasSeen()`
+    to check, then calls `markSeen()` explicitly, only after the packet has
+    also cleared `allowPacketForward()` — so a packet that fails a later
+    validity check is never poisoned into the table as "seen."
 
 At 160 entries, the table holds the last ~10–15 seconds of traffic at typical
 flood rates. Packets that arrive after their entry has been evicted will be

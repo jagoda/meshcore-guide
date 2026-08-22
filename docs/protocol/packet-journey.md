@@ -75,8 +75,9 @@ R1's `Mesh::onRecvPacket()` sees `isRouteDirect()` is true and
 R1:
 
 1. Calls `allowPacketForward()` — it is a repeater, so this returns `true`.
-2. Checks `_tables->hasSeen(pkt)` — the `SimpleMeshTables` cyclic buffer of
-   recent packet hashes. This is a new packet, so `false`.
+2. Checks `_tables->wasSeen(pkt)` — the `SimpleMeshTables` cyclic buffer of
+   recent packet hashes. This is a new packet, so `false`; `markSeen(pkt)` is
+   then called to record it.
 3. Calls `removeSelfFromPath()`: decrements the hop count and shifts the
    remaining hashes forward, so the path is now just `[hash(R2)]`.
 4. Schedules a retransmit with direct-route priority (highest: `0`).
@@ -114,7 +115,7 @@ In `Mesh::onRecvPacket()` for `PAYLOAD_TYPE_TXT_MSG`:
     If the packet arrives via multiple paths (e.g., a direct route and a
     straggling flood copy), the first arrival to pass the MAC check wins.
     Subsequent arrivals with the same packet hash are dropped by the
-    `hasSeen()` table.
+    `wasSeen()` table.
 
 ---
 
