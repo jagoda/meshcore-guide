@@ -147,6 +147,30 @@ To administer a repeater remotely, use the companion app's **Remote Admin** tab 
 
 ---
 
+## Ethernet node not reachable (no DHCP address / can't connect to port 23)
+
+**Applies to:** `_ethernet` firmware variants on RAK4631 + RAK13800 (v1.17).
+
+- **No DHCP server on the network.** The Ethernet firmware does not fall back
+  to a static or link-local address — if DHCP doesn't respond, the device
+  never gets an IP and Ethernet access does not come up at all. Check `eth.status`
+  over USB serial to confirm whether an address was assigned; if not, verify
+  a DHCP server is reachable on that network segment.
+- **Port 23 (repeater/room server) unreachable but the device has an IP.**
+  Confirm you're using a raw TCP client (`nc <ip> 23`), not an SSH or Telnet
+  client that expects negotiation — the CLI is a bare byte stream, not the
+  Telnet protocol. Check for a firewall blocking port 23 between your machine
+  and the device.
+- **Companion app can't connect over Ethernet.** Companion Ethernet firmware
+  listens on **port 5000**, not 23 — port 23 CLI access does not exist on
+  companion firmware at all (see [Remote Admin CLI §
+  Ethernet](remote-admin-cli.md#ethernet-tcp-v117)).
+- **BLE stopped working after flashing an Ethernet companion variant.** This
+  is expected — Ethernet **replaces** BLE on `RAK_4631_companion_radio_ethernet`;
+  there is no BLE fallback on that firmware.
+
+---
+
 ## Settings reverted after downgrading from v1.17 to v1.16
 
 This is the legacy-prefs-file asymmetry, not a bug: v1.17 stores preferences

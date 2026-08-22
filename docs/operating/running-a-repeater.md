@@ -116,6 +116,15 @@ Once the repeater is in your contact list and you know the admin password:
 All commands below can be sent locally (serial) or remotely (companion app admin CLI).
 For the full command reference see [CLI Commands spec](https://docs.meshcore.io/cli_commands/) on docs.meshcore.io.
 
+!!! note "v1.17: a fourth access path on Ethernet hardware"
+    On `RAK_4631_repeater_ethernet` firmware (RAK4631 + RAK13800), the same
+    CLI is also reachable over raw TCP on port 23 — see [Remote Admin CLI §
+    Ethernet (TCP)](remote-admin-cli.md#ethernet-tcp-v117). `eth.status`
+    reports connection state and the DHCP-assigned IP. This is repeater/room
+    server only — companion Ethernet firmware exposes no raw CLI at all; its
+    Ethernet interface only carries the companion binary protocol (port
+    5000), replacing BLE.
+
 ### Operational status
 
 ```

@@ -94,6 +94,21 @@ These concrete classes implement `MainBoard` for their respective platforms.
 `NRF52BoardDCDC` is a thin subclass that enables the nRF52840's internal
 DC/DC regulator on boards that have the required inductors populated.
 
+## `MultiSerialInterface` — four transports at once (v1.17)
+
+`src/helpers/MultiSerialInterface.h` implements `BaseSerialInterface` by
+multiplexing up to **4** concrete transports (`MAX_INTERFACES`) behind one
+interface: `InterfaceType::Bluetooth`, `USB`, `WiFi`, and (new in v1.17)
+`Ethernet`. A board's `MyMesh` calls `addInterface(type, instance)` for each
+transport it supports; `MultiSerialInterface` fans frame reads/writes out to
+whichever registered interface is active, so the companion frame protocol
+itself is transport-agnostic — the same `handleCmdFrame()` code path serves a
+BLE client, a USB client, or (on Ethernet-flashed RAK4631 hardware) a TCP
+client on port 5000, without transport-specific branches in the application
+layer. This is the same mechanism that lets Ethernet **replace** BLE on
+companion Ethernet firmware rather than needing to run alongside it — see
+[Remote Admin CLI § Ethernet (TCP)](../operating/remote-admin-cli.md#ethernet-tcp-v117).
+
 ## `arch/` — platform-level radio glue
 
 The `arch/` directories provide two things that vary per platform but are

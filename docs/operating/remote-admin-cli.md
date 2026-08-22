@@ -1,9 +1,10 @@
 # Remote Admin CLI
 
-Every MeshCore infrastructure node — repeater, room server, sensor — responds to a command-line interface (CLI). You can reach this CLI in two ways:
+Every MeshCore infrastructure node — repeater, room server, sensor — responds to a command-line interface (CLI). You can reach this CLI in three ways:
 
 - **Locally**, via USB serial (picocom, the web flasher console, or config.meshcore.io).
 - **Remotely**, over the mesh via the companion app's **Admin** tab.
+- **Over Ethernet** (v1.17, RAK4631 + RAK13800 hardware only) — a wired TCP alternative to the two above.
 
 This page explains both access paths, the command categories, and how to work safely on a live node. For the exhaustive command reference, see the [CLI Commands spec](https://docs.meshcore.io/cli_commands/) and the [Terminal Chat CLI spec](https://docs.meshcore.io/terminal_chat_cli/) on docs.meshcore.io.
 
@@ -34,6 +35,25 @@ Or use the browser-based console at [config.meshcore.io](https://config.meshcore
 
 !!! note "Freemium gate"
     Remote admin over RF has a wait-timer gate in the iOS/Android companion app. A one-time in-app purchase removes the wait. The T-Deck requires a registration key. Neither is needed for the core messaging experience.
+
+### Ethernet (TCP) (v1.17)
+
+On **RAK4631 + RAK13800** hardware flashed with an `_ethernet` firmware
+variant, DHCP assigns an IP address on boot. Repeater and room server
+firmware expose the same CLI over raw **TCP port 23** — connect with
+`nc <ip> 23` or a raw-mode terminal, no companion app involved. Check
+`eth.status` (repeater/room only) for connection state and assigned IP.
+
+Companion Ethernet firmware (`RAK_4631_companion_radio_ethernet`) works
+differently: Ethernet **replaces BLE** as the companion app's transport, on
+**TCP port 5000** (the same port the Wi-Fi companion firmware uses) — there
+is no raw CLI over Ethernet on companion firmware, and no BLE fallback once
+you've flashed the Ethernet variant.
+
+See [What You Need § Wired backhaul](../getting-started/what-you-need.md) and
+[Connect a Client](../getting-started/connect-a-client.md) for setup, and
+[Troubleshooting](troubleshooting.md) for no-DHCP / can't-reach-port-23
+symptoms.
 
 ### Web config UI
 

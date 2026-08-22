@@ -26,6 +26,18 @@ Common entry-level devices that work well:
     New devices are added regularly. This table is illustrative; the flasher at
     [meshcore.io/flasher](https://meshcore.io/flasher) is always current.
 
+### Wired backhaul: Ethernet (v1.17)
+
+If you need a fixed-install repeater, room server, or companion radio with a
+wired network connection instead of BLE/Wi-Fi, v1.17 adds Ethernet support on
+**RAK4631 + RAK13800** (W5100S WisBlock Ethernet module, on a RAK19007 or
+RAK19018 base board). See [Connect a Client § Step 2 — Connect to your
+radio](connect-a-client.md#step-2-connect-to-your-radio) (Ethernet tab) and
+[Remote Admin CLI § Access paths](../operating/remote-admin-cli.md#access-paths)
+for the access-path details, and
+[FAQ §7.8](https://docs.meshcore.io/faq/) for the upstream hardware
+walkthrough.
+
 ### How many devices do you need?
 
 | Goal | Minimum devices |
