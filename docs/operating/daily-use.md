@@ -114,3 +114,22 @@ Full command reference: [Terminal Chat CLI spec](https://docs.meshcore.io/termin
 - **Advert after moving.** If you change location significantly, flood-advert so repeaters and contacts update your path.
 - **Sync clocks after downtime.** Infrastructure nodes that restart with no GPS or NTP source may drift; `clock sync` from an admin session corrects them.
 - **Channels and duty cycle.** If you're on a busy channel in an EU region, check your duty-cycle setting — MeshCore will hold transmissions to stay compliant. See [Airtime & Regions](../concepts/airtime-and-regions.md).
+
+## Upgrading from v1.16 to v1.17: settings carry over automatically
+
+v1.17 changed how preferences are stored on disk (see [Mesh & Tables §
+Preference storage](../internals/mesh-and-tables.md)), but this is invisible
+in normal operation — your name, radio settings, admin password, and every
+other preference survive the upgrade with no reconfiguration needed. The one
+thing worth knowing before you do it:
+
+**A downgrade back to v1.16 does not see anything you changed on v1.17.**
+The v1.16→v1.17 upgrade migrates your settings into the new `/prefs.json`
+file but deliberately leaves the old preferences file in place rather than
+deleting it. If you later downgrade, the firmware reads that old file again —
+which reflects the node's state *as of the v1.16→v1.17 upgrade*, not its
+current v1.17 state. Any changes made while running v1.17 (a new admin
+password, a different name, a radio retune) do not propagate back to the
+legacy file, and a downgrade will silently revert to the pre-upgrade
+settings. If you're planning to downgrade, note down anything you changed
+under v1.17 first.

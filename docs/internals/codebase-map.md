@@ -79,6 +79,9 @@ None are required by the core — you can substitute your own.
 | Helper | Purpose |
 |---|---|
 | `SimpleMeshTables.h` | Cyclic ring-buffer of 160 packet hashes — duplicate detection |
+| `ConfigSerializer.{h,cpp}` | v1.17: nested-JSON preference (de)serialisation — backs `/prefs.json` |
+| `RoutingPolicy.h` | v1.17: `chooseReplyRoute()` / `chooseReplyScope()` / `isFloodHopLimitExceeded()` |
+| `UTF8Helpers.h` | v1.17: `validUtf8PrefixLength()` — code-point-safe truncation |
 | `StaticPoolPacketManager.{h,cpp}` | Fixed-size packet pool + priority outbound queue |
 | `ArduinoHelpers.h` | `ArduinoMillis` (wraps `millis()`), `StdRNG` (wraps `random()`) |
 | `ArduinoSerialInterface.{h,cpp}` | Framed serial/BLE command interface for companion-radio |

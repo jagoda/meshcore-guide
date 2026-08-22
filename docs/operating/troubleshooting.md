@@ -147,6 +147,20 @@ To administer a repeater remotely, use the companion app's **Remote Admin** tab 
 
 ---
 
+## Settings reverted after downgrading from v1.17 to v1.16
+
+This is the legacy-prefs-file asymmetry, not a bug: v1.17 stores preferences
+in a new `/prefs.json` file but deliberately leaves the old binary prefs file
+in place when it migrates. A downgrade back to v1.16 reads that old file
+again, so any settings changed *while running v1.17* — a new admin password,
+a renamed node, a radio retune — silently revert to whatever they were at the
+moment of the v1.16→v1.17 upgrade. Re-apply the changes you made under v1.17
+after downgrading, or avoid downgrading a node whose settings have since
+changed. See [Daily Use § Upgrading from v1.16 to
+v1.17](daily-use.md#upgrading-from-v116-to-v117-settings-carry-over-automatically).
+
+---
+
 ## nRF52 device won't boot / stuck in boot loop
 
 **Low battery:** The nRF52 power management firmware prevents boot below ~3300 mV to avoid flash corruption. The device enters SYSTEMOFF and wakes when the battery recovers or USB is connected.
