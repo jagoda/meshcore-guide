@@ -136,9 +136,72 @@ Several events cause a node to re-send its advert:
 | User presses "advertise" in app | Zero-hop or flood (user choice) | Manual re-announcement |
 | Location update (GPS fix) | Flood | Updates lat/lon in the advert |
 | Name or configuration change | Flood | Ensures contacts see updated metadata |
+| Both timers set to 0 (repeaters) | none | No adverts at all — a *hidden* node from v1.18 |
 
 The timestamp in each advert is the wall-clock time at generation. Receiving
 nodes store the newest-timestamped advert per public key and discard older ones.
+
+---
+
+## Hidden repeaters (v1.18)
+
+A repeater announces itself through two independent timers:
+
+| Timer | CLI | Default |
+|---|---|---|
+| Zero-hop advert interval | `set advert.interval <minutes>` | 2 minutes on a fresh install, then reset to 0 the first time any setting is saved (anything below the 60-minute minimum is treated as "off") |
+| Flood advert interval | `set flood.advert.interval <hours>` | 47 hours |
+
+Set **both** to 0 and the repeater becomes hidden. In code that is a single
+predicate, `MyMesh::isHiddenNode()` in `examples/simple_repeater/MyMesh.h`:
+
+```cpp
+bool isHiddenNode() const {
+  return _prefs.advert_interval == 0 && _prefs.flood_advert_interval == 0;
+}
+```
+
+### What "adverts off" meant in v1.17.1
+
+Only that the node stopped *sending* adverts. It remained findable by an
+active scan: companions can ask for repeaters with a zero-hop control packet
+(`CTL_TYPE_NODE_DISCOVER_REQ`, `0x80`) and every repeater in radio range
+replied with `CTL_TYPE_NODE_DISCOVER_RESP` (`0x90`) carrying its public key and
+the SNR it heard the request at, regardless of its advert configuration. So a
+"hidden" v1.17.1 repeater was invisible in the ordinary contact-list flow but
+still answered "discover nodes" in the app.
+
+### What it means in v1.18
+
+`onControlDataRecv()` now refuses to answer discovery requests when
+`isHiddenNode()` is true, so with both timers at 0 the repeater sends nothing
+you can use to learn about it: no adverts, no discovery responses. The rest of
+the request handling is unchanged:
+
+- The request is a **zero-hop** control packet, so only directly reachable
+  nodes ever see it — discovery has never worked across multiple hops.
+- `payload[0]` is the control type in the upper nibble (`0x80` request,
+  `0x90` response) plus a `prefix_only` flag in bit 0; `payload[1]` is a node-type
+  filter bitmask (`1 << ADV_TYPE_REPEATER` for repeaters); `payload[2..5]` is a
+  random 4-byte *tag* the responder must echo so the requester can match
+  replies; an optional `payload[6..9]` is a `since` timestamp.
+- A repeater answers only if it also has forwarding enabled (`disable_fwd`
+  unset) and its own `discovery_mod_timestamp` is not older than `since`.
+- Responses carry the inbound SNR as a signed byte pre-multiplied by 4
+  (`payload[1] = packet->_snr`; the receiver divides by 4 again) and are sent
+  after a random delay widened ×4 (`getRetransmitDelay(resp) * 4`), since many
+  repeaters may answer the same request.
+- Answers are rate-limited to 4 per 2 minutes (`discover_limiter(4, 120)`).
+
+!!! warning "Hiding is not the same as being passive"
+    A hidden repeater still **relays** traffic — hiding only suppresses
+    adverts and discovery replies. Stopping the relaying is a separate
+    setting (`set repeat off`, see [Running a Repeater § Observer
+    mode](../operating/running-a-repeater.md#observer-mode)).
+
+Also note that hiding cannot un-announce anything: companions that already
+stored this repeater keep their contact entry, and it will keep showing up in
+their lists until it ages out.
 
 ---
 
