@@ -234,7 +234,9 @@ repeat{ disable f_max f_max_uns f_max_adv loop }
 room{ rd_only }                                 # room server only
 power{ adc_mult pwr_sav_en }                    # repeater/room/sensor only
 comp{ auto_max defs_nm defs_key pin buzz_q vibe_q auto_add man_add
-      tel_base tel_loc tel_env }                # companion only
+      tel_base tel_loc tel_env tz_offset }      # companion only (tz_offset v1.18)
+custom{}                                        # v1.18: board/variant keys (fan, fem gains, …)
+wifi{ ssid pwd enabled }                        # v1.18: companion, ENABLE_WIFI_INTERFACE only
 ```
 
 Companion-only notes:
@@ -243,10 +245,22 @@ Companion-only notes:
   *preference key* rename only; the companion protocol's `client_repeat`
   *frame field* is unchanged.
 - `vibe_q` (`vibe_quiet`) is a new companion preference.
-- Companion FEM prefs (`fem_rxgain`/`fem_txgain`) are defined in code but
-  **not yet persisted** on companion firmware (guarded out with `#if 0`) —
-  don't expect a companion-radio FEM setting to survive a reboot yet, even
-  though the CLI accepts it.
+- Companion FEM prefs (`fem_rxgain` / `fem_txgain`) **are persisted as of
+  v1.18.** The `#if 0` guard around those two `def(...)` lines in
+  `examples/companion_radio/NodePrefs.h` — the one that made a v1.17
+  companion-radio FEM setting evaporate on reboot — has been removed, so the
+  value is now loaded and saved like any other radio pref. The code comment
+  that came out with it records that `fem_rxgain` had previously been mapped to
+  the wrong JSON property.
+- Several companion keys that used to be commented out or hard-coded in that
+  same `RadioPrefs::structure()` became persistent in v1.18: `cad`, `int_thr`,
+  `f_txdelay`, `d_txdelay`, `agc_int`. v1.18 also adds `tz_offset` and, on
+  builds with `ENABLE_WIFI_INTERFACE`, a `wifi{ ssid pwd enabled }` sub-tree.
+- `custom{}` (v1.18) is the free-form escape hatch: `DynamicConfigSerializer`
+  stores arbitrary key/value pairs in a fixed-size blob and is handed to the
+  board through `MainBoard::attachDynamicPrefs()`, which is how the T-Beam 1W
+  persists `fan` / `fan_lo` / `fan_hi` and the FEM boards persist `fem_rxgain`
+  / `fem_txgain` without new struct fields.
 
 ## Key takeaways
 

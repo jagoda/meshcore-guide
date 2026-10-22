@@ -15,7 +15,7 @@ arch/
 variants/
   heltec_v3/          ← pin map (target.h) + PlatformIO env (platformio.ini)
   lilygo_t3s3/
-  …                   (40+ variants)
+  …                   (90+ variants)
 ```
 
 ## `MainBoard` — the hardware interface
@@ -35,6 +35,8 @@ public:
   virtual void onBeforeTransmit() { }              // e.g. light TX LED
   virtual void onAfterTransmit()  { }
   virtual void onBootComplete()   { }
+  virtual bool handleCommand(const char* cmd, uint32_t ts, char* reply) { return false; }  // v1.18
+  virtual void loop() { /* no op */ }              // v1.18: watchdog / housekeeping tick
   // … power management, OTA, GPIO, temperature …
 };
 ```
@@ -49,12 +51,45 @@ Two startup reasons are defined:
 Applications check `board.getStartupReason()` to decide whether to send an
 initial advertisement or skip straight to listening.
 
-### FEM (front-end module) hooks (v1.17)
+### Board hooks added in v1.18
 
-`MainBoard` gained six new virtual hooks (`src/MeshCore.h:67-73`) for boards
-with an external LoRa FEM (LNA on receive, PA gain switch on transmit):
+Three things were added to `MainBoard` (`src/MeshCore.h`) in v1.18, all with
+default bodies so existing boards compile unchanged:
+
+| Hook | Purpose |
+|---|---|
+| `handleCommand(cmd, ts, reply)` | Per-board CLI verbs. `CommonCLI` tries the radio commands first, then calls this before answering "Unknown command" — the T-Beam 1W uses it for `get fan` / `set fan`, Heltec boards for `radio.fem.*` |
+| `loop()` | Called from every example's `main.cpp` `loop()`; lets a board feed its watchdog and run periodic housekeeping |
+| `attachDynamicPrefs(KeyValueStore*)` | Hands the board the node's key/value preference store so variant-specific settings (`fan`, `fan_lo`, `fan_hi`, `fem_rxgain`, `fem_txgain`) persist across reboots |
+
+Power-source reporting also grew in v1.18: `isChargerActive()`, plus the
+optional `hasUsbPowerDetect()` / `isUsbPowered()` / `hasSolarChargerDetect()` /
+`isSolarChargerActive()` set, which the CLI's `power` command reports as
+`usb:` / `solar_chg:` (or `n/a` when a board does not override them).
+
+### FEM (front-end module) control — v1.17 hooks, replaced in v1.18
+
+v1.17 put six FEM virtuals on `MainBoard` (`setLoRaFemLnaEnabled()`,
+`canControlLoRaFemLna()`, `isLoRaFemLnaEnabled()` and the `…PaGain…` trio) so a
+board with an external LNA/PA could be driven from `CommonCLI`.
+
+**v1.18 removed all six from `MainBoard`.** FEM support is now board-local, in
+the same `attachDynamicPrefs()` + `handleCommand()` pair described above: each
+board owns its `radio.fem.*` verbs and reads/writes the state through the prefs
+store, so the setting survives a reboot. Boards that implement it at v1.18.0:
+Heltec Tracker V2, Heltec V4, Heltec V4 R8 and Heltec T096 expose
+`get/set radio.fem.rxgain` (LNA); the new WIO Tracker L1 1W exposes
+`get/set radio.fem.txgain` (it switches the 1 W PA supply through
+`SX126X_POWER_EN`) and answers `Error: unsupported` for `rxgain`. Station G3
+still implements both LNA and PA-gain control, but as its own `LoRaFEMControl`
+methods rather than `MainBoard` overrides. A board that implements neither
+answers `Unknown command`. See [Remote Admin CLI § Radio
+configuration](../operating/remote-admin-cli.md) for the CLI-level behaviour.
+
+For the record, the v1.17 hook set was:
 
 ```cpp
+// v1.17 only — removed from src/MeshCore.h in v1.18
 virtual bool setLoRaFemLnaEnabled(bool enable) { return false; }
 virtual bool canControlLoRaFemLna() const { return false; }
 virtual bool isLoRaFemLnaEnabled() const { return false; }
@@ -63,15 +98,11 @@ virtual bool canControlLoRaFemPaGain() const { return false; }
 virtual bool isLoRaFemPaGainEnabled() const { return false; }
 ```
 
-The default bodies all return `false` — a board **opts in** by overriding
-them (Station G3's `LoRaFEMControl` is the first implementation). `CommonCLI`
-checks `canControlLoRaFem{Lna,PaGain}()` before honouring `radio.fem.rxgain` /
-`radio.fem.txgain`; a board that hasn't overridden the hooks gets `Error:
-unsupported` from the CLI rather than a hook call that silently no-ops. See
-[Remote Admin CLI § Radio configuration](../operating/remote-admin-cli.md)
-for the CLI-level behaviour and [What You Need § New in
-v1.17](../getting-started/what-you-need.md#new-in-v117) for which boards
-implement it today.
+All six defaulted to `false`, so a board **opted in** by overriding them; in
+v1.17 `CommonCLI` checked `canControlLoRaFem{Lna,PaGain}()` before honouring
+`radio.fem.rxgain` / `radio.fem.txgain`. v1.18's per-board `handleCommand()`
+replaces that guard: the board answers the verb itself, so a board without FEM
+support returns "Unknown command" rather than `Error: unsupported`.
 
 ## `RTCClock` — the wall-clock interface
 
@@ -102,7 +133,14 @@ These concrete classes implement `MainBoard` for their respective platforms.
 - `onBeforeTransmit()` / `onAfterTransmit()`: drives `P_LORA_TX_LED` or a
   NeoPixel LED if the board defines those pins.
 - `ESP32RTCClock`: uses `gettimeofday()` / `settimeofday()` backed by the
-  ESP32 RTC peripheral. Initialised to a known-recent time on power-on.
+  ESP32 RTC peripheral. As of v1.18 the clock also survives resets: the current
+  time is mirrored into `RTC_NOINIT_ATTR` backup words with a magic value
+  (`RTC_BACKUP_MAGIC`) and restored on any reset that is not deep sleep, so a
+  crash, watchdog or brownout no longer rewinds the clock to a hard-coded seed
+  date (`RTC_TIME_MIN`, 1 Mar 2026 — it was 15 May 2024 before v1.18). Full
+  power loss still loses it. This is **ESP32-only**; nRF52/STM32/RP2040 boards
+  have no such backup and restart at their seed time unless they have an I²C
+  RTC or GPS.
 
 ### `NRF52Board` highlights
 
@@ -114,6 +152,28 @@ These concrete classes implement `MainBoard` for their respective platforms.
   protection (refuse to boot below `voltage_bootlock` mV), LPCOMP-triggered
   wake from SYSTEMOFF when battery recovers, shutdown reason codes persisted
   in GPREGRET.
+
+!!! note "v1.18: power management is no longer compiled in on most nRF52 boards"
+    Everything described in the bullet above — `checkBootVoltage()`,
+    `enterSystemOff()`, `configureVoltageWake()` — sits inside
+    `#ifdef NRF52_POWER_MANAGEMENT`, which each variant opts into with
+    `-D NRF52_POWER_MANAGEMENT` in its `platformio.ini`. Thirteen nRF52
+    variants set it in v1.17.1; at v1.18.0 only three do: `heltec_t1`,
+    `heltec_tower_v2` and `muzi_base`, all at `PWRMGT_VOLTAGE_BOOTLOCK` =
+    3100 mV. On every other nRF52 board the block is not compiled at all, so
+    `config->voltage_bootlock` is never read — even though many of those
+    `variant.h` files still carry the `#define`. The CLI matches the gating:
+    `get pwrmgt.support` answers `unsupported` and `pwrmgt.source` /
+    `pwrmgt.bootmv` return `ERROR: Power management not supported`, while
+    `get pwrmgt.bootreason` is not compiled out and reports `Not available`.
+    v1.18 also renamed the private `initPowerMgr()` to an idempotent
+    `pwrmgtInit()` and made LPCOMP wake arming depend on
+    `isPwrMgtInitialised()` and `getWakeLpcompSupported()`.
+
+    For the operator-facing side — per-board table, thresholds, upgrade
+    history, what to do about a node that can now boot on a flat cell — see
+    [Power & Battery § nRF52 power
+    management](../operating/power-and-battery.md#nrf52-power-management-hardware-level).
 
 `NRF52BoardDCDC` is a thin subclass that enables the nRF52840's internal
 DC/DC regulator on boards that have the required inductors populated.
@@ -195,6 +255,41 @@ extra_configs =
   variants/*/platformio.ini
   platformio.local.ini
 ```
+
+### Variants added in v1.18
+
+| Variant dir | Board | MCU | Radio | Notes |
+|---|---|---|---|---|
+| `thinknode_m8` | ThinkNode M8 | nRF52840 | SX1262 (`CustomSX1262Wrapper`) | 1.54" e-ink (`GxEPD2_154_D67`), rotary + nav input, TCXO 3.3 V, 22 dBm |
+| `thinknode_m4` | ThinkNode M4 | nRF52840 | LR1110 (`CustomLR1110Wrapper`) | `RF_SWITCH_TABLE`, TCXO 1.6 V, GPS (`ENV_INCLUDE_GPS`), 22 dBm |
+| `waveshare_esp32s3_lr1121` | Waveshare ESP32-S3 LR1121 | ESP32-S3FH4R2 (4 MB flash / 2 MB PSRAM) | LR1121 (`CustomLR1121` / `CustomLR1121Wrapper`) | 850–930 MHz **and** 2.4 GHz; `LR1121_FORCE_HP_PA` (LP PA unpopulated); native USB-CDC; no LED, battery sense or user button |
+| `muzi_base` | Muzi Base (MuziWorks) | nRF52840 | Duo = LR1121, Uno = SX1262 | one variant dir, radio picked per environment (`muzi_base_duo_*` / `muzi_base_uno_*`); the `superIO` environments add a SH1107 display, joystick, RX8130CE RTC, GPS and buzzer |
+| `wio-tracker-l1-1w` | Seeed WIO Tracker L1 1W | nRF52840 | SX1262 + 1 W PA | SH1106 OLED, GPS at 9600 baud, PA supply switched via `SX126X_POWER_EN` (exposed as `radio.fem.txgain`) |
+
+Three new PlatformIO board JSONs came with them: `boards/thinknode_m8.json`,
+`boards/thinknode_m4.json` and `boards/muzi_base.json`.
+
+### Board and radio support changes in v1.18
+
+| Area | Change |
+|---|---|
+| LR1121 (new driver) | `CustomLR1121` / `CustomLR1121Wrapper`: switches the LR1121 to its DC/DC regulator after `begin()`, clips TX power to the active PA's range (the HF PA tops out at 13 dBm) instead of failing, re-applies the configured power after a frequency change, and recovers RX after a header error. Used by `waveshare_esp32s3_lr1121` and Muzi Base Duo |
+| LR1110 | `CustomLR1110::begin()` now also enables the DC/DC regulator (RadioLib defaults to LDO) |
+| LR2021 | `RadioLibWrapper::setTxPower()` takes the radio `idle()` before `setOutputPower()` under `USE_LR2021`. The `startReceive()` change in `CustomLR2021.h` between v1.17.1 and v1.18.0 is whitespace only |
+| RAK3401 GPS | GPS now initialises on this board: the RAK12500-on-I²C probe no longer toggles `WB_IO2` (`#ifndef RAK_3401` — that rail also feeds the PA), and `PIN_GPS_TX` / `PIN_GPS_RX` were swapped onto the right pins (they were crossed in v1.17.1) |
+| GPS detect | Cold-start modules are polled for up to ~5 s (20 × 250 ms) instead of a single check after a fixed 1 s delay, so slow modules are no longer missed at boot |
+| Bosch env sensors | BME680, BME680+BSEC, BME280 and BMP280 are now probed at **both** 0x76 and 0x77 (SDO strap), with the alternate treated as a fallback rather than a second device |
+| ProMicro | INA226 current/voltage sensor support (`ENV_INCLUDE_INA226`, `robtillaart/INA226`) |
+| T-Echo Lite | New `LilyGo_T-Echo-Lite_companion_radio_usb` environment (USB-CDC companion). The KISS environment itself is unchanged from v1.17.1, only moved in the file |
+| Heltec CT62 | `board_build.partitions = min_spiffs.csv` to fit around the 4 MB flash limit |
+| T-Beam 1W | Real fan control: NTC-based auto mode (on at 36 °C, off below 30 °C), 15 s TX cooldown, fail-safe on a bad NTC reading, plus `get fan` / `set fan` / `set fan.lo` / `set fan.hi` via the board `handleCommand()` hook, persisted in the prefs store |
+| T1000-E | The `SENSOR_EN` gate (P0.04) was removed — temp/lux sensors now run off `PIN_3V3_EN` alone; GPS sleep/reset handling moved into `src/helpers/sensors/AirohaSleep.h` with corrected `GPS_VRTC_EN` / `GPS_SLEEP_INT` polarity |
+| Heltec T1 | `DISABLE_DS3231_PROBE` — the onboard ICM-42607-P IMU answers at I²C 0x68, the same address the DS3231 probe checks, which produced a bogus, unfixable clock |
+| Meshnology W12 | TX power defaults raised: `LORA_TX_POWER` 4 → 5 dBm (~22 dBm at the antenna) and `MAX_LORA_TX_POWER` 4 → 13 dBm (measured ~28 dBm); its companion build also gained `ENABLE_WIFI_INTERFACE` |
+| WIO E5 (dev/mini) | **Could not verify.** No change to `variants/wio-e5-dev` or `variants/wio-e5-mini` between v1.17.1 and v1.18.0, and no WIO-E5-specific TX-power change elsewhere in the tree |
+
+RAK12501 is not referenced anywhere in the v1.18.0 tree; only the RAK12500
+(I²C u-blox) path exists, so RAK12501 support could not be confirmed.
 
 ## `boards/` — legacy board JSON
 

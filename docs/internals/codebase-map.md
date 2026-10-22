@@ -71,6 +71,11 @@ They have no Arduino dependencies and can be compiled for any target.
 | `Dispatcher.{h,cpp}` | Abstract base: `Radio` + `PacketManager` + `MillisecondClock` → cooperative Rx/Tx loop |
 | `Mesh.{h,cpp}` | Extends `Dispatcher`: understands payload types, routes/forwards/decrypts, fires `on…Recv()` callbacks |
 
+`armstubs.cpp` (new in v1.18) sits beside them but is build support, not
+protocol: weak stubs for the newlib syscalls (`_close`, `_read`, `_fstat`, …)
+that the newer `toolchain-gccarmnoneeabi` pulls in, kept weak so every platform
+links unchanged.
+
 ## `src/helpers/` — the optional toolkit
 
 Helpers are Arduino-dependent implementations that examples wire in.
@@ -80,6 +85,9 @@ None are required by the core — you can substitute your own.
 |---|---|
 | `SimpleMeshTables.h` | Cyclic ring-buffer of 160 packet hashes — duplicate detection |
 | `ConfigSerializer.{h,cpp}` | v1.17: nested-JSON preference (de)serialisation — backs `/prefs.json` |
+| `CommonRadioPrefs.{h,cpp}` | v1.18: shared radio-preference interface (freq/bw/sf/cr, tx power, delays, FEM gains) **plus** `handleCommand()` — the radio CLI verbs now live here once, for every role |
+| `KeyValueStore.h` | v1.18: two-method `getByKey()` / `setByKey()` interface; `MainBoard::attachDynamicPrefs()` receives one so a board can persist its own settings (`fan`, `fem_rxgain`, …) |
+| `DynamicConfigSerializer.{h,cpp}` | v1.18: the free-form `custom{}` prefs sub-tree (128-byte key/value blob) that implements `KeyValueStore`, with the radio prefs as fallback |
 | `RoutingPolicy.h` | v1.17: `chooseReplyRoute()` / `chooseReplyScope()` / `isFloodHopLimitExceeded()` |
 | `UTF8Helpers.h` | v1.17: `validUtf8PrefixLength()` — code-point-safe truncation |
 | `StaticPoolPacketManager.{h,cpp}` | Fixed-size packet pool + priority outbound queue |
@@ -87,6 +95,8 @@ None are required by the core — you can substitute your own.
 | `ArduinoSerialInterface.{h,cpp}` | Framed serial/BLE command interface for companion-radio |
 | `BaseSerialInterface.h` | Abstract base for the serial interface |
 | `MultiSerialInterface.h` | v1.17: multiplexes up to 4 transports (BLE/USB/WiFi/Ethernet) behind one `BaseSerialInterface` |
+| `wifi/SerialWifiInterface.{h,cpp}` | v1.18: ESP32 Wi-Fi transport, moved here from `src/helpers/esp32/`; built when the environment defines `ENABLE_WIFI_INTERFACE` |
+| `rp2040/SerialBLEInterface.{h,cpp}` | v1.18: RP2040 BLE transport (the nRF52 counterpart lives in `nrf52/`) |
 | `ethernet/` | v1.17: Ethernet transport (RAK4631 + RAK13800/W5100S) — DHCP, raw-TCP CLI (port 23), companion-over-Ethernet (port 5000) |
 | `BaseChatMesh.{h,cpp}` | Contact list, message queue, ACK tracking — used by companion_radio |
 | `CommonCLI.{h,cpp}` | Admin CLI command parser (used by repeater, room server, sensor) |
@@ -99,10 +109,10 @@ None are required by the core — you can substitute your own.
 | `SensorManager.h` | Telemetry pipeline for sensor nodes |
 | `StatsFormatHelper.h` | Format stats reply strings |
 | `ESP32Board.h` / `NRF52Board.{h,cpp}` | Platform-specific `MainBoard` implementations |
-| `radiolib/` | RadioLib radio driver wrappers (SX1262, SX1268, SX127x, …) |
+| `radiolib/` | RadioLib radio driver wrappers (SX1262, SX1268, SX127x, LR1110, LR2021, …). v1.18 adds `CustomLR1121.h` / `CustomLR1121Wrapper.h` |
 | `bridges/` | RS232 and ESPNow bridge implementations |
-| `ui/` | Display + button helpers |
-| `sensors/` | Individual sensor drivers (GPS, BME280, …) |
+| `ui/` | Display + button helpers. v1.18 adds `SH1107Display.{h,cpp}` and `RotaryInputGPIO.{h,cpp}` |
+| `sensors/` | Individual sensor drivers (GPS, BME280, …). v1.18 adds `AirohaSleep.h` (T1000-E GPS sleep/power sequencing) |
 
 ## `examples/` — the application layer
 
@@ -110,6 +120,40 @@ Each example is a complete, flashable firmware image.
 They all follow the same pattern: instantiate the stack, subclass `Mesh`
 (or a higher-level helper), wire the `setup()` / `loop()` callbacks.
 See [Example Apps](example-apps.md) for a detailed walkthrough.
+
+v1.18 additions worth knowing when reading these:
+
+- `examples/companion_radio/` now routes UI/protocol events through a
+  `MyMesh::Listener` interface (`setListener()` in `MyMesh.h`,
+  `AbstractUITask` implements it) instead of scattering `#ifdef
+  DISPLAY_CLASS` blocks through `MyMesh.cpp`. It can also run CLI commands:
+  `CMD_RUN_CLI_COMMAND` (66) / `RESP_CODE_CLI_REPLY` (29) let a connected app
+  execute one through the node, and the new `TXT_TYPE_CLI_COMMAND` (3) text type
+  does the same for a remote contact that has remote-CLI permission.
+- `examples/simple_sensor/` implements the sensor-node role's telemetry
+  **push**: `REQ_TYPE_SUBSCRIBE` (0x08) and `REQ_TYPE_UNSUBSCRIBE` (0x09)
+  register/unregister a client's `push_tag` and per-channel minimum deltas, and
+  `SensorMesh::loop()` pushes new telemetry when a subscribed value moves more
+  than its delta. Before v1.18 a sensor node only answered on-demand queries.
+
+### Where a CLI command is dispatched (v1.18)
+
+`CommonCLI::handleCommand()` no longer holds the radio verbs inline. The order
+of dispatch is:
+
+```
+CommonCLI::handleCommand()
+  → NodePrefs::getRadioPrefs()->handleCommand()   CommonRadioPrefs: radio/freq/af/tx/txdelay/fem…
+  → _board->handleCommand()                       MainBoard hook: per-variant verbs (fan, fem, …)
+  → the generic commands decided in CommonCLI     poweroff, advert, clock, region, acl, stats…
+  → otherwise "Unknown command"                   (replies/stats come from CommonCLICallbacks)
+```
+
+Both hooks report "not mine" by returning `false`, and `CommonCLI` saves prefs
+whenever the pref store reports itself dirty after a handled command — that is
+how a board-level `set fan …` survives a reboot. Roles do not add commands by
+subclassing the parser; they implement `CommonCLICallbacks` so the shared
+parser can ask them for data (neighbours, stats, region reload, …).
 
 ## `arch/` — platform radio glue
 
