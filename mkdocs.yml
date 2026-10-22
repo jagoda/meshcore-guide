@@ -91,6 +91,7 @@ nav:
     - Frame Model: companion-api/frame-model.md
     - Command Lifecycle: companion-api/command-lifecycle.md
     - Common Operations: companion-api/common-operations.md
+    - Companion CLI: companion-api/companion-cli.md
     - Worked Example — meshcore-ha: companion-api/worked-example-meshcore-ha.md
     - Build Your Own Client: companion-api/build-your-own-client.md
   - Architecture & Internals:

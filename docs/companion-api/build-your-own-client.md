@@ -154,6 +154,8 @@ After reconnecting, re-run the full startup sequence — the firmware has no mem
 
 - **One command at a time.** The command queue invariant is the single most common source of client bugs. If you ever have two pending commands, responses will be misrouted.
 
+- **CLI commands get no ACK.** Text types `1` (CLI data) and `3` (CLI command, new in v1.18.0) are sent with `expected_ack = 0`, so `RESP_CODE_SENT` confirms only that the radio accepted the packet. The reply arrives later as an ordinary inbound contact message with `txt_type = 1`. See [The Companion CLI](companion-cli.md#the-remote-path-end-to-end).
+
 - **Contact list during drain.** The firmware may emit `PUSH_CODE_ADVERT` (`0x80`) while you are draining messages with `get_msg()`. Your receive loop must route adverts out of band — they are not a response to `get_msg()`.
 
 - **Path length semantics differ by direction.** In `CMD_SEND_CHANNEL_DATA`, `path_len = 0xFF` means *flood*. In `RESP_CODE_CHANNEL_DATA_RECV`, `path_len = 0xFF` means *arrived via direct route*. The meaning is inverted. See the [Companion Protocol spec](https://docs.meshcore.io/companion_protocol/#receive-channel-data-datagram) for the full table.

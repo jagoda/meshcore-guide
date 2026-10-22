@@ -12,6 +12,7 @@ This section is a developer narrative guide. Byte-level command and response cat
 | [Frame Model](frame-model.md) | How commands are wrapped for transit and how response frames are identified |
 | [Command Lifecycle](command-lifecycle.md) | The request/response rhythm, command queuing, timeouts, push notifications |
 | [Common Operations](common-operations.md) | Startup sequence, fetching contacts, sending messages, reading stats |
+| [Companion CLI](companion-cli.md) | The text command line on companion nodes (v1.18.0): local and over-the-mesh paths, command registration, the Remote CLI permission |
 | [Worked Example — meshcore-ha](worked-example-meshcore-ha.md) | A real Home Assistant integration as an end-to-end walkthrough |
 | [Build Your Own Client](build-your-own-client.md) | Transport choices, existing libraries, and gotchas to avoid |
 
