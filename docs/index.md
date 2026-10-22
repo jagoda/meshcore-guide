@@ -10,6 +10,11 @@ teaches the **mental models and workflows** that make it click. Byte-level specs
 — live at [docs.meshcore.io](https://docs.meshcore.io); this guide cross-links
 there rather than restating them.
 
+This guide documents MeshCore firmware **v1.18.0**, released 15 October 2026.
+Firmware versions, wire-protocol version codes and byte-level behaviour described
+here are checked against that release; bump this line when the guide moves to a
+newer one.
+
 ## What makes this guide different
 
 The MeshCore ecosystem already has excellent resources:

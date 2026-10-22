@@ -64,7 +64,7 @@ LilyGo_T3S3_sx1262_kiss_modem
 Build and flash:
 
 ```bash
-export FIRMWARE_VERSION=v1.17.1
+export FIRMWARE_VERSION=v1.18.0
 sh build.sh build-firmware Heltec_v3_kiss_modem
 ```
 

@@ -40,7 +40,7 @@ flowchart TD
 After connecting, always perform the full startup sequence before issuing any other commands:
 
 1. **`CMD_APP_START` (`0x01`)** — sends your app's name to the firmware and returns `PACKET_SELF_INFO` (`0x05`) with the node's public key, radio settings, and advertised name. Without this step the firmware does not know a client is present.
-2. **`CMD_DEVICE_QUERY` (`0x16 0x03`)** — returns `PACKET_DEVICE_INFO` with firmware version, the firmware's **protocol version code** (`FIRMWARE_VER_CODE`), max contacts, max channel slots, and model string. **v1.16 and v1.17 firmware both report version code 13** (v1.15 was 11) — the companion wire protocol did not change between v1.16.0 and v1.17.1. Read this code to gate version-dependent features (see [companion protocol additions since v1.15](#companion-protocol-additions-since-v115)) rather than assuming a capability is present.
+2. **`CMD_DEVICE_QUERY` (`0x16 0x03`)** — returns `PACKET_DEVICE_INFO` with firmware version, the firmware's **protocol version code** (`FIRMWARE_VER_CODE`), max contacts, max channel slots, and model string. **The version code is the number to test against: v1.15.0 reports 11, v1.16.0 and both v1.17 releases report 13, and v1.18.0 reports 14.** That reply's layout did not change in v1.18.0 — what moved is the set of commands and frames the firmware accepts, so gate on the code, never on the release string. Read this code to gate version-dependent features (see [companion protocol additions since v1.15](#companion-protocol-additions-since-v115)) rather than assuming a capability is present.
 3. **`CMD_SET_DEVICE_TIME`** — synchronises the firmware clock. Outbound message timestamps use the firmware clock; a drifted clock means messages arrive with wrong timestamps on the mesh.
 4. **`CMD_GET_CONTACTS`** — fetches the full contact list. Returns a `PACKET_CONTACT_START`, one `PACKET_CONTACT` per contact, then `PACKET_CONTACT_END`.
 5. **`CMD_GET_CHANNEL` × N** — fetches each channel slot (index 0 through max_channels − 1). Returns `PACKET_CHANNEL_INFO` for each.
@@ -81,11 +81,13 @@ sequenceDiagram
 ## Companion protocol additions since v1.15
 
 These companion commands depend on the firmware's protocol version code (read it
-from `PACKET_DEVICE_INFO`). They were introduced in the v1.16 cycle, when the
-version code moved from 11 to 13; **v1.17 reports the same code 13 and adds no
-further commands** — the companion wire protocol has been unchanged since v1.16.0:
+from `PACKET_DEVICE_INFO`) and are listed with the code that introduced them. The
+first three arrived in the v1.16 cycle, when the code moved from 11 to 13;
+**v1.17.0 and v1.17.1 keep code 13 and add no further commands** — nothing in the
+companion protocol changed between v1.16.0 and v1.17.1. **v1.18.0 moves the code to
+14**, which is where the last two entries come in:
 
-- **`CMD_SEND_RAW_PACKET` (byte `65`)** — payload `[priority][raw packet bytes]`.
+- **`CMD_SEND_RAW_PACKET` (byte `65`, ver 13+)** — payload `[priority][raw packet bytes]`.
   The firmware parses the supplied bytes with `tryParsePacket` and dispatches the
   packet at the given priority. This is distinct from the existing
   `CMD_SEND_RAW_DATA` (byte `25`), which wraps application data in a datagram —
@@ -98,6 +100,23 @@ further commands** — the companion wire protocol has been unchanged since v1.1
 - **Explicit unscoped-flood override (ver 12+)** — `CMD_SET_FLOOD_SCOPE_KEY` with
   sub-byte `1` sets the node to send unscoped floods; sub-byte `0` (optionally
   followed by a 16-byte key) sets or clears the scope override.
+- **`CMD_RUN_CLI_COMMAND` (byte `66`, ver 14+)** — payload is the raw CLI command
+  text, the same commands the console accepts, run locally against the node's own
+  command handler. The node answers with a single `RESP_CODE_CLI_REPLY` (byte
+  `29`): a response-code byte followed by the reply text. An unrecognised command
+  is not an error frame — the reply text is simply `Unknown command` — so parse
+  the string, not just the response code. This executes on the node itself and
+  puts nothing on the mesh.
+- **`TXT_TYPE_CLI_COMMAND` (text type `3`, ver 14+)** — a third on-air text type
+  next to `TXT_TYPE_PLAIN` (0) and `TXT_TYPE_CLI_DATA` (1). `CMD_SEND_TXT_MSG`
+  accepts it for direct messages (channel messages still require
+  `TXT_TYPE_PLAIN`); a node that receives one and trusts the sender executes it as
+  a CLI command and replies with a `TXT_TYPE_CLI_DATA` message, which expects no
+  ack. Trust is a per-contact bit — `0x10` of the contact `flags` byte, *remote CLI
+  allowed*, carried through `CMD_ADD_UPDATE_CONTACT` like any other flag. Without
+  that bit the command is not run; it is queued to the app as an inbound message
+  with text type `3` instead. Treat that bit as shell access to the node and set
+  it only for contacts you would give a console.
 
 Gate each of these on the reported version code: a client talking to older
 firmware should fall back rather than send a command the node will reject.
