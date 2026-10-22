@@ -2,6 +2,8 @@
 
 This page covers the most common problems operators encounter and the steps to diagnose them. For additional Q&A see the [MeshCore FAQ](https://docs.meshcore.io/faq/) on docs.meshcore.io.
 
+**Applies to:** MeshCore firmware v1.18.0; sections note where behaviour differs in earlier releases.
+
 ---
 
 ## A node shows a very old "last seen" timestamp
@@ -39,6 +41,24 @@ For GPS-equipped nodes: `gps sync` sets the clock from GPS time.
    - Reduce the flood advert interval: `set flood.advert.interval 6` (hours)
 3. **Out of RF range.** No path exists between you and the node, even via repeaters.
 4. **Clock skew so severe that the advert is filtered.** Sync clocks on both ends.
+
+---
+
+## A hidden repeater no longer appears in node discovery (v1.18)
+
+**Symptom:** after upgrading, a repeater you deliberately made "hidden" no
+longer appears when a companion scans for nodes, or in another repeater's
+`discover.neighbors` output, even though it still forwards traffic.
+
+**Cause:** a repeater is hidden when both `advert.interval` and
+`flood.advert.interval` are `0`. Since v1.18 it also stops answering zero-hop
+node-discovery requests, so hiding its adverts now hides it from discovery too.
+This is intentional.
+
+**Fix:** if it should be discoverable, give it an advert timer — for example
+`set flood.advert.interval 47` (hours) or `set advert.interval 60` (minutes) —
+then `reboot`. If it should stay hidden, add it as a contact manually or reach
+it by its known route; a manual `advert` from its CLI still works.
 
 ---
 
@@ -87,6 +107,24 @@ set loop.detect minimal     — drop packets that appear in a loop
 
 ---
 
+## Repeater drops flood packets after a fresh v1.18 install
+
+**Symptom:** a newly flashed or factory-reset v1.18 repeater forwards less
+flood traffic than expected; `stats-packets` shows received floods that are not
+being forwarded.
+
+**Cause:** new repeater installs now default `loop.detect` to `minimal`
+(v1.18). It drops a flood packet when the repeater's own hash already appears
+in the path 4 times with 1-byte hashes, 2 times with 2-byte hashes, or once
+with 3-byte hashes. Upgraded repeaters keep their previous setting, so this
+affects fresh installs and factory resets only.
+
+**Fix:** confirm with `get loop.detect`. If your mesh depends on the old
+forward-everything behaviour, `set loop.detect off`; otherwise leave it on as
+protection against loop storms.
+
+---
+
 ## Path-hash collisions — messages reach wrong node or stats show unexpected paths
 
 **Root cause:** Two or more repeaters share the same 1-byte public-key prefix (first byte of their public key). Path analysis tools and traceroutes become ambiguous.
@@ -124,6 +162,7 @@ gps                 — shows: off | on, {active|deactivated}, {fix|no fix}, {sa
 gps on              — enable GPS hardware
 gps sync            — sync clock from GPS time once a fix is acquired
 gps setloc          — write current GPS coordinates to the node's stored lat/lon
+gps diag            — UART/NMEA counters, ages, satellite count and fix state (v1.18)
 ```
 
 ---
@@ -149,7 +188,7 @@ To administer a repeater remotely, use the companion app's **Remote Admin** tab 
 
 ## Ethernet node not reachable (no DHCP address / can't connect to port 23)
 
-**Applies to:** `_ethernet` firmware variants on RAK4631 + RAK13800 (v1.17).
+**Applies to:** `_ethernet` firmware variants on RAK4631 + RAK13800 (v1.17, unchanged in v1.18).
 
 - **No DHCP server on the network.** The Ethernet firmware does not fall back
   to a static or link-local address — if DHCP doesn't respond, the device
@@ -180,14 +219,24 @@ again, so any settings changed *while running v1.17* — a new admin password,
 a renamed node, a radio retune — silently revert to whatever they were at the
 moment of the v1.16→v1.17 upgrade. Re-apply the changes you made under v1.17
 after downgrading, or avoid downgrading a node whose settings have since
-changed. See [Daily Use § Upgrading from v1.16 to
-v1.17](daily-use.md#upgrading-from-v116-to-v117-settings-carry-over-automatically).
+changed. See [Daily Use § Upgrade history: v1.16 to
+v1.17](daily-use.md#upgrade-history-v116-to-v117).
+
+---
+
+## Settings added in v1.18 are ignored after downgrading to v1.17
+
+v1.18 and v1.17 both use `/prefs.json`, so a v1.18→v1.17 downgrade does not
+revert the whole file. v1.17 simply ignores keys it does not know — the v1.18
+Wi-Fi credentials and `tz.offset`, for example — so those settings appear to be
+lost. Saving any setting under v1.17 rewrites `/prefs.json` without the unknown
+keys, so copy them down before downgrading if you intend to come back to v1.18.
 
 ---
 
 ## nRF52 device won't boot / stuck in boot loop
 
-**Low battery:** The nRF52 power management firmware prevents boot below ~3300 mV to avoid flash corruption. The device enters SYSTEMOFF and wakes when the battery recovers or USB is connected.
+**Low battery:** At v1.18.0 only Heltec T1, Heltec Tower V2 and Muzi Base still enforce a boot-voltage lockout (3100 mV). On every other nRF52 board the lockout is gone, so a low battery can let the device start and then brown out mid-operation. Charge it before relying on the node and read voltage with `get pwrmgt.bootmv` on those three boards, or `stats-core` elsewhere. See [Power & Battery § nRF52 power management](power-and-battery.md#nrf52-power-management-hardware-level) for the per-board table and the v1.17 history.
 
 **Corrupted flash:** Enter DFU mode by double-pressing the reset button (RAK, T114, XIAO) or double-tapping the magnetic connector (T1000-E). Then:
 
@@ -253,6 +302,7 @@ stats-packets       — send/recv counters (serial only)
 neighbors           — last 8 heard neighbours with SNR (repeater only)
 get pwrmgt.source   — battery or external (nRF52 boards with pwr mgmt)
 get pwrmgt.bootmv   — boot voltage (nRF52 boards with pwr mgmt)
+power               — battery, USB, solar-charger and external-power state (v1.18)
 ```
 
 ---
