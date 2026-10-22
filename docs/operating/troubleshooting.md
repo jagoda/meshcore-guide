@@ -236,7 +236,7 @@ keys, so copy them down before downgrading if you intend to come back to v1.18.
 
 ## nRF52 device won't boot / stuck in boot loop
 
-**Low battery:** On the nRF52 builds that still enable power management (Heltec T1, Heltec Tower V2 and Muzi Base as of v1.18), firmware prevents boot below ~3300 mV to avoid flash corruption. The device enters SYSTEMOFF and wakes when the battery recovers or USB is connected. Most other nRF52 boards had this boot lockout disabled in v1.18, so a low battery can let the device start and then brown out mid-operation; charge it and check `get pwrmgt.bootmv` before relying on it.
+**Low battery:** At v1.18.0 only Heltec T1, Heltec Tower V2 and Muzi Base still enforce a boot-voltage lockout (3100 mV). On every other nRF52 board the lockout is gone, so a low battery can let the device start and then brown out mid-operation. Charge it before relying on the node and read voltage with `get pwrmgt.bootmv` on those three boards, or `stats-core` elsewhere. See [Power & Battery § nRF52 power management](power-and-battery.md#nrf52-power-management-hardware-level) for the per-board table and the v1.17 history.
 
 **Corrupted flash:** Enter DFU mode by double-pressing the reset button (RAK, T114, XIAO) or double-tapping the magnetic connector (T1000-E). Then:
 

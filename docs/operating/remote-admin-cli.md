@@ -269,17 +269,23 @@ get pwrmgt.bootreason   — reset and shutdown reason strings
 get pwrmgt.bootmv       — boot voltage in millivolts
 ```
 
-`get pwrmgt.bootreason` is no longer nRF52-gated as of v1.17 — earlier
-firmware returned `ERROR: Power management not supported` on non-nRF52
-boards; it now reports the reset/shutdown reason on any board.
+The commands differ in how they behave when a board has no power management
+compiled in (v1.18.0):
 
-As of v1.18, the low-voltage **boot lockout** is compiled out on most nRF52
-boards (it remains enabled on the Heltec T1, Heltec Tower V2 and Muzi Base
-builds), so a very low battery no longer parks those other boards in
-SYSTEMOFF before they boot. See [Power & Battery](power-and-battery.md) for the
-trade-off.
+| Command | On a board without `NRF52_POWER_MANAGEMENT` |
+|---------|---------------------------------------------|
+| `get pwrmgt.support` | `> unsupported` |
+| `get pwrmgt.source` | `ERROR: Power management not supported` |
+| `get pwrmgt.bootmv` | `ERROR: Power management not supported` |
+| `get pwrmgt.bootreason` | Not ifdef-gated: replies `> Reset: Not available; Shutdown: Not available` on boards that do not override the reason hooks (ESP32 boards supply a real reset reason, but still `Shutdown: Not available`) |
 
-See [Power & Battery](power-and-battery.md) and the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/) for context.
+As of v1.18.0, power management is compiled in only for Heltec T1, Heltec
+Tower V2 and Muzi Base; those three use a 3100 mV boot lockout. Every other
+nRF52 board boots regardless of battery voltage. See [Power & Battery § nRF52
+power management](power-and-battery.md#nrf52-power-management-hardware-level)
+for the per-board table and the v1.17.1 history.
+
+Internals — LPCOMP reference selection, SYSTEMOFF entry and shutdown reason codes — are covered in the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/).
 
 ---
 
