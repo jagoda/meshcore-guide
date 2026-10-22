@@ -61,7 +61,7 @@ Target names follow the pattern `<board>_<role>`. Roles are:
 the binary and exposed in the node's status response.
 
 ```bash
-export FIRMWARE_VERSION=v1.17.1   # or any string you like
+export FIRMWARE_VERSION=v1.18.0   # or any string you like
 ```
 
 ## Build a single target
@@ -144,7 +144,7 @@ into the C++ preprocessor. Both cascade via `extends`.
 You can also drive PlatformIO directly — useful in CI or when you need finer control:
 
 ```bash
-export PLATFORMIO_BUILD_FLAGS="-DFIRMWARE_VERSION='\"v1.17.1-dev\"'"
+export PLATFORMIO_BUILD_FLAGS="-DFIRMWARE_VERSION='\"v1.18.0-dev\"'"
 pio run -e Heltec_v3_repeater
 ```
 
