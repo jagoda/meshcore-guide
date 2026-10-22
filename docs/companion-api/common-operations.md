@@ -30,7 +30,7 @@ Node → PACKET_CONTACT          (one per contact, repeated)
 Node → PACKET_CONTACT_END     (signals list complete)
 ```
 
-Parse each `PACKET_CONTACT` immediately as it arrives; do not wait for `CONTACT_END` before processing. The contact payload includes the contact's public key (used as the stable identity across the mesh), advertised name, and routing information.
+Parse each `PACKET_CONTACT` immediately as it arrives; do not wait for `CONTACT_END` before processing. The contact payload includes the contact's public key (used as the stable identity across the mesh), advertised name, routing information, and a **flags byte** carrying per-peer permissions — favourite, three telemetry permissions, and (new in v1.18.0) the **Remote CLI** bit `0x10`, which lets that peer send CLI commands to this node. Preserve flag bits you do not understand when you write a contact back with `CMD_ADD_UPDATE_CONTACT`. See [The Companion CLI](companion-cli.md#the-remote-cli-permission).
 
 New contacts that appear on the mesh while your application is connected arrive as unsolicited `PUSH_CODE_ADVERT` (`0x80`) frames. If your application uses manual contact mode (`CMD_SET_MANUAL_ADD_CONTACTS`), these adverts are buffered for your application to decide whether to add them.
 

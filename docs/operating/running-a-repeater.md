@@ -163,9 +163,29 @@ get dutycycle          — duty cycle limit (%)
 set dutycycle 10       — limit to 10% (EU 868 MHz requirement)
 get txdelay            — retransmit window factor (default: 0.5)
 set txdelay 1.0        — widen the window in dense networks
-get loop.detect        — loop detection mode (off / minimal / moderate / strict)
+get loop.detect        — loop detection mode (off / minimal / moderate / strict;
+                         default: minimal on new installs, upgraded nodes keep their value)
 set loop.detect minimal
 ```
+
+!!! note "v1.18: loop detection now defaults to `minimal`"
+    New repeater installs ship with `loop.detect` set to `minimal` instead of
+    `off`. In `minimal` mode a flood is dropped once this repeater's own hash
+    already appears in the path 4 times (1-byte hashes), 2 times (2-byte) or
+    once (3-byte) — the `max_loop_minimal[]` table in
+    `examples/simple_repeater/MyMesh.cpp`. Only malformed floods that keep
+    re-entering the same node ever reach those counts, which is why it is safe
+    as a default. `moderate` and `strict` are unchanged and still opt-in.
+
+    The default lives in the repeater's compiled-in prefs and is then
+    overridden by `/prefs.json`, so a repeater **upgraded** from v1.17.1 keeps
+    the `off` value already saved in its prefs. After upgrading, run
+    `get loop.detect` and set it explicitly if you want the new behaviour;
+    only a fresh install (or erasing the filesystem) picks up `minimal`
+    automatically. Upgrade steps are in [Daily Use](daily-use.md)
+    ("Upgrading to v1.18.0"); if a fresh node seems to forward less flood
+    traffic, see [Troubleshooting](troubleshooting.md) ("Repeater drops flood
+    packets after a fresh v1.18 install").
 
 As of v1.16 a repeater forwards floods under **separate** caps: regular unscoped
 floods are limited by `flood.max.unscoped` (default 64) and ADVERT floods by
@@ -199,7 +219,31 @@ Larger hashes help mesh-analysis tools disambiguate repeaters but reduce max flo
 ```
 get flood.advert.interval      — hours (default: 47)
 set flood.advert.interval 6    — advert every 6 hours
+get advert.interval            — minutes between zero-hop adverts
 ```
+
+!!! note "v1.18: a repeater with adverts turned off is now genuinely hidden"
+    Turning **both** timers off — `set advert.interval 0` (zero-hop) and
+    `set flood.advert.interval 0` — makes the repeater a *hidden* node (in code,
+    `MyMesh::isHiddenNode()` returns true only when `advert_interval` and
+    `flood_advert_interval` are both 0). Advert *sending* is unchanged by this
+    release; what changed is that v1.18 also adds an `!isHiddenNode()` check to
+    node-discovery request handling, so `onControlDataRecv()` now bails out
+    early for hidden nodes. In v1.17.1 the repeater kept answering
+    `CTL_TYPE_NODE_DISCOVER_REQ`, so it stayed findable by anyone in direct
+    radio range running a discovery scan in the companion app.
+
+    Hiding is not the same as going silent or passive: a hidden repeater still
+    relays traffic. That is `set repeat off` (see [Observer
+    mode](#observer-mode)). Note also that zero-hop adverts are switched off
+    automatically the first time you save any setting, because the CLI resets
+    an interval below the 60-minute minimum to 0 (`MIN_LOCAL_ADVERT_INTERVAL`
+    in `src/helpers/CommonCLI.cpp`) — that behaviour predates v1.18. See
+    [Adverts Deep Dive § Hidden repeaters
+    (v1.18)](../protocol/adverts-deep-dive.md#hidden-repeaters-v118) for the
+    discovery mechanism and [Troubleshooting](troubleshooting.md) ("A hidden
+    repeater no longer appears in node discovery") for the symptom-and-fix
+    view.
 
 ---
 
@@ -226,6 +270,7 @@ reboot
 | Repeater not seen in contacts | Wrong frequency | `get radio`; set freq to match other nodes |
 | Repeater seen but messages don't relay | `set repeat` is off | `get repeat`; `set repeat on` |
 | Old last-seen timestamp | Clock not set | `clock sync` from a companion admin session |
+| Repeater never appears in a node-discovery scan | Node is hidden — both advert timers at 0 (v1.18 behaviour) | `get advert.interval` and `get flood.advert.interval`; set one non-zero. See [Troubleshooting](troubleshooting.md) — *A hidden repeater no longer appears in node discovery* |
 | Deafness — not hearing nearby nodes | AGC stuck | `set agc.reset.interval 4` |
 | Lots of duplicate forwards | txdelay too low for dense mesh | Increase `txdelay` |
 

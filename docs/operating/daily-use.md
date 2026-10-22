@@ -115,7 +115,48 @@ Full command reference: [Terminal Chat CLI spec](https://docs.meshcore.io/termin
 - **Sync clocks after downtime.** Infrastructure nodes that restart with no GPS or NTP source may drift; `clock sync` from an admin session corrects them.
 - **Channels and duty cycle.** If you're on a busy channel in an EU region, check your duty-cycle setting — MeshCore will hold transmissions to stay compliant. See [Airtime & Regions](../concepts/airtime-and-regions.md).
 
-## Upgrading from v1.16 to v1.17: settings carry over automatically
+## Upgrading to v1.18.0: settings carry over, but some defaults change
+
+v1.18.0 keeps the same `/prefs.json` preferences file as v1.17, so your name,
+radio settings, admin password, regions, and existing keys survive the upgrade
+with no migration step or reconfiguration. Settings introduced in v1.18 start
+from their defaults and are saved normally from then on.
+
+Behaviour changes a user will notice after upgrading:
+
+- **Loop detection is on by default for new repeaters.** A factory-fresh or
+  factory-reset repeater now ships with `loop.detect minimal`; upgraded nodes
+  keep whatever value they already had. `set loop.detect off` restores the old
+  no-detection behaviour.
+- **Hidden repeaters stay out of node discovery.** A repeater is "hidden" when
+  both `advert.interval` and `flood.advert.interval` are `0`. Since v1.18 it
+  also stops answering zero-hop node-discovery requests, so it no longer shows
+  up in a discover/neighbours scan even though it still forwards traffic.
+  Give it an advert interval if you want it discoverable.
+- **Transport code 0 is treated as unscoped.** Packets with a zero first
+  transport code now match the wildcard (unscoped) region instead of being
+  matched against individual region keys, so region filtering behaves
+  consistently for unscoped traffic.
+- **ESP32 nodes keep their clock across resets.** System time is backed up in
+  RTC memory and restored after a software reboot, crash, watchdog or brownout
+  reset, instead of falling back to a fixed seed date. A node that has never
+  been synced still needs `clock sync` or GPS after a full power loss.
+- **Most nRF52 boards no longer refuse to boot on a low battery.** The
+  undervoltage boot lockout is now compiled in only for the Heltec T1, Heltec
+  Tower V2 and Muzi Base builds. Charge a low battery before relying on the
+  node — it can now boot and then brown out instead of staying in protective
+  shutdown.
+- **Companion firmware has a CLI and more BLE+Wi-Fi builds.** Additional boards
+  can now run one companion image that accepts both BLE and Wi-Fi, `cad` and
+  the radio-preference commands are configurable on companions, and Wi-Fi and
+  time-zone settings can be set over the CLI. See [Remote Admin CLI §
+  Companion CLI](remote-admin-cli.md#companion-cli-v118).
+
+Sensor nodes can also push telemetry to subscribed clients in v1.18, rather
+than only answering on-demand queries. Infrastructure nodes gain `gps diag`
+and `power`.
+
+### Upgrade history: v1.16 to v1.17
 
 v1.17 changed how preferences are stored on disk (see [Mesh & Tables §
 Preference storage](../internals/mesh-and-tables.md)), but this is invisible

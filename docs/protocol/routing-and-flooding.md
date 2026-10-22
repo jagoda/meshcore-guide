@@ -145,6 +145,26 @@ and sets `ROUTE_TYPE_DIRECT`. As the packet traverses each hop, the logic in
 
 When the hop count reaches zero, the packet has arrived at the destination.
 
+!!! note "v1.18: forwarded ACKs now wait out the direct retransmit delay"
+    A repeater that relays a DIRECT packet is not its destination, but it may
+    still emit copies of an ACK for it — that is what `set multi.acks 1` /
+    `getExtraAckTransmitCount()` adds. v1.18 puts those forwards on the same
+    random delay as every other routed packet: `Mesh::onRecvPacket()` now
+    computes `getDirectRetransmitDelay(pkt)` once and hands it to
+    `routeDirectRecvAcks()`, and `forwardMultipartDirect()` carries the same
+    value into the multipart ACK timeout it schedules.
+
+    In v1.17.1 the base delay passed in was a literal `0`, so with the default
+    `multi.acks=0` (no extra ACKs) a forwarded ACK went straight back out with
+    **no jitter at all** — the one routed packet type that ignored
+    `direct.txdelay`. Extra multi-ACKs were staggered by a fresh
+    `getDirectRetransmitDelay()` per iteration, which in turn pushed the plain
+    ACK out by the accumulated delay; they are now spaced a fixed 300 ms apart
+    after the single base delay. Operator consequence: a node with a large
+    `direct.txdelay` now *delays* ACK forwarding where it previously answered
+    instantly, so acknowledgements can trail the data by a few hundred
+    milliseconds more than before in dense meshes.
+
 ---
 
 ## Path-hash sizing trade-offs
@@ -299,6 +319,38 @@ particular request.
 extraction of logic that already existed; its semantics are unchanged, only
 its shape (a single reusable function instead of inline checks at each call
 site).
+
+### Transport code 0 is the wildcard (v1.18)
+
+`TransportKey::calcTransportCode()` never emits `0x0000` or `0xFFFF` — both
+are bumped to `0x0001` / `0xFFFE` — so a transport code of zero on the wire can
+only come from a sender that has no scope to offer. v1.18 decides that this
+means "un-scoped": `RegionMap::findMatch()` short-circuits to the wildcard
+region as soon as `transport_codes[0] == 0`, before any region key is tried.
+
+What changes relative to v1.17.1:
+
+| Aspect | v1.17.1 | v1.18.0 |
+|---|---|---|
+| `RegionMap::findMatch()` for code 0 | no region matches → `NULL` | the wildcard (`*`) region |
+| Forwarding such a flood | refused — `allowPacketForward()` rejects every flood whose resolved region is `NULL` ("unknown transport code") | forwarded like an un-scoped flood |
+| `request_was_unscoped_flood` given to `chooseReplyScope()` | `false` (region is `NULL`, not wildcard) | `true` (`isWildcard()`) → replies take `REPLY_SCOPE_NONE` (un-scoped) instead of `REPLY_SCOPE_DEFAULT` |
+| Hop-limit bucket | moot — the packet was never forwarded | still `flood.max`: `isFloodHopLimitExceeded()` keys off the on-wire route type, and a code-0 packet stays `ROUTE_TYPE_TRANSPORT_FLOOD` |
+
+Two consequences worth knowing:
+
+- The reply-scope row above means a request that arrives with an explicit
+  code-0 transport field is answered **un-scoped**, not under your default
+  region. Those replies are therefore again exposed to `flood.max.unscoped` on
+  repeaters further out — the v1.17 `REPLY_SCOPE_DEFAULT` fix covers requests
+  whose scope is *unresolvable*, not ones that explicitly ask for unscoped.
+- The wildcard short-circuit runs before the allow/deny mask is tested, so a
+  code-0 flood resolves to the wildcard entry even if `region denyf *` has set
+  `REGION_DENY_FLOOD` on it. What stops un-scoped floods on such a node is the
+  `recv_pkt_region == NULL` check in `allowPacketForward()` (an un-scoped flood
+  is `ROUTE_TYPE_FLOOD`, and `MyMesh::onRecvPacket()` maps that to `NULL` when
+  the wildcard denies flooding) — a code-0 `ROUTE_TYPE_TRANSPORT_FLOOD` packet
+  no longer trips that check.
 
 ---
 

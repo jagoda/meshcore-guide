@@ -169,7 +169,7 @@ Sensor nodes are often deployed remotely on battery or solar. Key settings:
 - **`powersaving on`** — on supported repeater/sensor variants, enables sleep between radio events.
 - **Duty cycle** — `set dutycycle <percent>` caps the transmitter's on-air fraction.
 
-nRF52-based sensor hardware (RAK4631, Heltec T114, XIAO nRF52840) supports hardware power management with boot-voltage lockout and LPCOMP wake — see [Power & Battery](power-and-battery.md) and the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/) for details.
+Power management is not universal: at v1.18.0 most nRF52 boards, including RAK4631, Heltec T114 and XIAO nRF52840, no longer compile in the boot-voltage lockout or LPCOMP wake. Only Heltec T1, Heltec Tower V2 and Muzi Base still do. See [Power & Battery § nRF52 power management](power-and-battery.md#nrf52-power-management-hardware-level) for the per-board table and the v1.17 history, and the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/) for internals.
 
 ---
 

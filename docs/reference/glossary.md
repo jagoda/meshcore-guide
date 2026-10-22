@@ -98,6 +98,10 @@ The firmware role for a user-facing node: connects to a companion app over BLE, 
 The serial/BLE frame API exposed by Companion Radio firmware; used by apps and tools (including meshcore-ha) to issue commands and receive responses and push notifications from a Companion Radio node.
 → [Companion API section](../companion-api/index.md)
 
+**Companion CLI**
+The text command line added to Companion Radio firmware in v1.18.0. Reachable from the attached app via `CMD_RUN_CLI_COMMAND` (byte `66` → `RESP_CODE_CLI_REPLY`, byte `29`) or from another node over the mesh via a `TXT_TYPE_CLI_COMMAND` message, and backed by the same `handleCommand()` that board variants extend for custom commands.
+→ [The Companion CLI](../companion-api/companion-cli.md)
+
 **Companion protocol frame**
 The fundamental unit of communication in the Companion API: a one-byte packet type followed by a variable-length payload, shared by commands (app→node) and responses (node→app).
 → [Frame Model](../companion-api/frame-model.md)
@@ -424,6 +428,10 @@ The random wait a repeater inserts before relaying a flood packet — a random m
 The `src/helpers/RegionMap` helper class that manages named RF regions and their transport keys, used for inter-region bridging via transport-code route types.
 → [Codebase Map](../internals/codebase-map.md), [Regions and Frequencies](regions-and-frequencies.md)
 
+**Remote CLI**
+A per-contact permission bit (`0x10` in the contact `flags` byte, added in v1.18.0) that lets one node send text CLI commands to another over the mesh. The check happens on the node that will *execute* the command, against its own contact record for the sender; it carries no password, so granting it is equivalent to handing over admin access to that node's radio settings and reboot/power controls.
+→ [The Companion CLI](../companion-api/companion-cli.md)
+
 **Repeater**
 The infrastructure firmware role. A Repeater forwards packets (both flood and direct) but has no user messaging interface. Typically deployed at elevation. Sends flood adverts every 47 hours by default.
 → [Nodes and Roles](../concepts/nodes-and-roles.md), [Running a Repeater](../operating/running-a-repeater.md)
@@ -497,6 +505,10 @@ The trust model MeshCore uses for public keys: the first time a node's advert is
 **Transport code**
 A 4-byte block inserted after the header byte in `ROUTE_TYPE_TRANSPORT_*` packets, carrying a region-scoped identifier that bridge repeaters use to decide whether to relay a packet across a region boundary.
 → [Packet Anatomy](../protocol/packet-anatomy.md), [RegionMap](../internals/codebase-map.md)
+
+**TXT_TYPE_CLI_COMMAND**
+The text-type value `3` (new in v1.18.0, in `src/helpers/TxtDataHelpers.h`) that marks a `PAYLOAD_TYPE_TXT_MSG` payload as an explicit CLI command rather than plain text (`0`), CLI data or reply (`1`), or signed plain text (`2`). Accepted only on the direct-message send path; on receipt the target node runs the command if the sender holds the Remote CLI permission, and otherwise queues the text for its app.
+→ [The Companion CLI](../companion-api/companion-cli.md)
 
 ---
 

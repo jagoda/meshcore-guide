@@ -26,9 +26,24 @@ Common entry-level devices that work well:
     New devices are added regularly. This table is illustrative; the flasher at
     [meshcore.io/flasher](https://meshcore.io/flasher) is always current.
 
+### New in v1.18
+
+v1.18 is mainly a software release, with five new board variants and several
+capabilities that change what one device can do:
+
+| Change | What it means for you |
+|--------|-----------------------|
+| **Companion CLI** | Companion firmware now has a text CLI — locally, or remotely from a contact granted the new **Remote CLI** permission — including Wi-Fi and `tz.offset` settings. See [Remote Admin CLI § Companion CLI](../operating/remote-admin-cli.md#companion-cli-v118). |
+| **BLE + Wi-Fi multi-interface builds** | One companion image can accept both BLE and Wi-Fi on Heltec V3, V4, V4 R8, Wireless Paper, RAK3112, Xiao S3 and Xiao S3 WIO (ThinkNode M7 already did this in v1.17). These builds do not expose USB serial. |
+| **Sensor telemetry push** | Sensor nodes can push telemetry to subscribed clients instead of waiting for an on-demand query. |
+| **New boards** | ThinkNode M8, ThinkNode M4, WIO Tracker L1 1W, Muzi Base (Duo / Uno / SuperIO), and Waveshare ESP32-S3 LR1121. |
+| **Clock and power behaviour** | ESP32 boards keep system time across resets, and the nRF52 low-voltage boot lockout is now compiled in only for a few boards. |
+| **Repeater loop detection** | New repeaters default to `loop.detect minimal`; existing nodes keep their configured value. |
+
 ### New in v1.17
 
-Eight new board variants, and a new radio family — **LR2021** — alongside the
+These are the v1.17 hardware additions; they remain supported in v1.18. There
+were eight new board variants, and a new radio family — **LR2021** — alongside the
 existing SX1262 / SX1268 / LR1110 / LLCC68 chips:
 
 | Device | Radio chip | Notes |
@@ -55,9 +70,10 @@ independent detector chains that only the LR2021 exposes.
 ### Wired backhaul: Ethernet (v1.17)
 
 If you need a fixed-install repeater, room server, or companion radio with a
-wired network connection instead of BLE/Wi-Fi, v1.17 adds Ethernet support on
+wired network connection instead of BLE/Wi-Fi, v1.17 added Ethernet support on
 **RAK4631 + RAK13800** (W5100S WisBlock Ethernet module, on a RAK19007 or
-RAK19018 base board). See [Connect a Client § Step 2 — Connect to your
+RAK19018 base board); the same variants remain in v1.18. See [Connect a Client
+§ Step 2 — Connect to your
 radio](connect-a-client.md#step-2-connect-to-your-radio) (Ethernet tab) and
 [Remote Admin CLI § Access paths](../operating/remote-admin-cli.md#access-paths)
 for the access-path details, and
