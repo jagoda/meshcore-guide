@@ -36,7 +36,7 @@ Most MeshCore-supported boards include a JST connector and an onboard charger. A
 
 - **Capacity:** 2000–10000 mAh for multi-day standalone operation.
 - **Charging:** Boards with onboard USB charging (TP4054, MCP73831, etc.) can be solar-charged via a cheap USB solar panel.
-- **Voltage range:** Nominal 3.7 V; full charge 4.2 V; cutoff (to protect the cell) ~3.0–3.3 V.
+- **Voltage range:** Nominal 3.7 V; full charge 4.2 V; cutoff (to protect the cell) ~3.0–3.3 V. On the handful of nRF52 boards that still ship the firmware boot lockout, the node refuses to boot below 3100 mV — see [Boot voltage lockout](#boot-voltage-lockout).
 
 ### Solar charging
 
@@ -96,17 +96,27 @@ For solar+battery deployments where the repeater may sleep through the night, a 
 
 ## nRF52 power management (hardware-level)
 
-nRF52-based boards (RAK4631, Heltec T114, XIAO nRF52840, SenseCAP T1000-E, GAT562 Mesh Watch13) have hardware-level power management built into the MeshCore firmware. Key features:
+Some nRF52 boards have hardware-level power management built into the MeshCore firmware. It is not universal: the code is compiled in only when a board variant sets the `NRF52_POWER_MANAGEMENT` build flag, and **as of v1.18.0 only three boards do** (see [Boards with power management](#boards-with-power-management-at-v1180)). Key features:
 
 ### Boot voltage lockout
 
-Before starting mesh operations, the firmware checks the battery voltage. If it is below the configured threshold (e.g. 3300 mV), the node enters **protective shutdown** (SYSTEMOFF) instead of booting — preventing brownouts and flash corruption from repeated failed boot loops at critically low charge.
+Before starting mesh operations, a board with power management compiled in reads the battery voltage. If it is below that board's `PWRMGT_VOLTAGE_BOOTLOCK` threshold, the node enters **protective shutdown** (SYSTEMOFF) instead of booting — preventing brownouts and flash corruption from repeated failed boot loops at critically low charge.
 
-This lockout is skipped when USB power (VBUS) is detected.
+The threshold is per-board, set in the variant's `variant.h`. It is **not** a firmware-wide 3300 mV: on all three boards that still ship the lockout at v1.18.0 it is **3100 mV**. A reading at or below 1000 mV is treated as an ADC glitch and does not trigger a shutdown.
+
+This lockout is skipped when USB power (VBUS) is detected, so a flat-but-plugged-in node boots normally.
+
+!!! note "v1.18.0: the lockout survives on three boards only"
+    Until v1.17.1 thirteen nRF52 variants compiled this in. At v1.18.0
+    `NRF52_POWER_MANAGEMENT` is set for **Heltec T1**, **Heltec Tower V2**, and
+    **Muzi Base** only. Everything else has no boot lockout: the node boots
+    regardless of battery voltage. On firmware v1.17.1 and earlier, assume any
+    nRF52 board you did not flash yourself may still refuse to boot on a low
+    battery.
 
 ### LPCOMP voltage wake
 
-When the node enters SYSTEMOFF due to low voltage, the **Low Power Comparator** (LPCOMP) is armed. It monitors the battery voltage and automatically wakes the node when the voltage rises above the recovery threshold (e.g. after solar charging resumes). VBUS detection also wakes the node if USB power is connected.
+When the node enters SYSTEMOFF because of the boot lockout, the **Low Power Comparator** (LPCOMP) is armed. It monitors the battery voltage and automatically wakes the node when the voltage rises above the recovery threshold (e.g. after solar charging resumes). VBUS detection also wakes the node if USB power is connected. Boards without power management compiled in get neither behaviour.
 
 ### Boot reason CLI queries
 
@@ -115,25 +125,36 @@ After any boot you can query why the node last restarted:
 ```
 get pwrmgt.support      — "supported" or "unsupported"
 get pwrmgt.source       — "battery" or "external" (USB power)
-get pwrmgt.bootreason   — e.g. "Wake from LPCOMP / Low Voltage"
+get pwrmgt.bootreason   — e.g. "> Reset: Wake from LPCOMP; Shutdown: Boot Protection"
 get pwrmgt.bootmv       — battery voltage at boot time (mV)
 ```
 
-These are invaluable for remote diagnostics: if a repeater went offline overnight, `get pwrmgt.bootreason` tells you whether it was a low-voltage shutdown or something else.
+These are invaluable for remote diagnostics: if a repeater went offline overnight, `get pwrmgt.bootreason` tells you whether it was a boot-protection shutdown or something else.
 
-### Supported boards (Phase 1)
+Only `get pwrmgt.bootreason` works without power management — it answers `> Reset: Not available; Shutdown: Not available` there. `get pwrmgt.support` answers `unsupported`, and `get pwrmgt.source` / `get pwrmgt.bootmv` return `ERROR: Power management not supported`.
 
-Boards with boot-lockout + LPCOMP wake + shutdown reason tracking as of the current firmware:
+### Boards with power management at v1.18.0
 
-| Board | Implemented |
-|-------|------------|
-| XIAO nRF52840 | Yes |
-| RAK4631 | Yes |
-| Heltec T114 | Yes |
-| GAT562 Mesh Watch13 | Yes |
-| SenseCAP Solar | Yes |
+Composition as of firmware **v1.18.0** (verified against the variant build flags and `variant.h` thresholds at tag `repeater-v1.18.0`):
 
-Other nRF52 boards (T1000-E, Nano G2 Ultra, WIO Tracker, etc.) do not yet implement Phase 1. See the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/) for the full board table and Phase 2 roadmap (runtime voltage monitoring, load shedding).
+| Board | Variant | Boot lockout | LPCOMP wake |
+|-------|---------|--------------|-------------|
+| Heltec T1 | `heltec_t1` | 3100 mV | Yes |
+| Heltec Tower V2 | `heltec_tower_v2` | 3100 mV | Yes |
+| Muzi Base | `muzi_base` | 3100 mV | Yes |
+
+Every other nRF52 board — RAK4631, RAK3401, Xiao nRF52840, Heltec T114, Heltec T096, GAT562 Mesh Watch13 / Tracker Pro / EVB Pro / 30S Mesh Kit, SenseCAP Solar, T1000-E, Nano G2 Ultra, WIO Tracker, Muziworks R1 Neo and the rest — no longer compiles the module in at this release. Those nodes will try to boot on a nearly flat cell and have no low-voltage shutdown or LPCOMP wake, so monitor the battery yourself: see [Reading battery voltage remotely](#reading-battery-voltage-remotely).
+
+!!! note "Historical: v1.17.1 and earlier"
+    In v1.17.1 thirteen variants compiled `NRF52_POWER_MANAGEMENT` in:
+    RAK4631, RAK3401, Xiao nRF52840, Heltec T114, Heltec T096, Heltec T1,
+    Heltec Tower V2, SenseCAP Solar, GAT562 Mesh Watch13, Tracker Pro,
+    EVB Pro, 30S Mesh Kit, and Muziworks R1 Neo. Most locked out below
+    **3300 mV**; Heltec T1 and Heltec Tower V2 already used 3100 mV, and
+    Muziworks R1 Neo set the threshold to 0, which disabled the check.
+    Nodes flashed with those releases keep the old behaviour until reflashed.
+
+Internals — LPCOMP reference selection, SYSTEMOFF entry, shutdown reason codes — are covered in the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/).
 
 ---
 
@@ -144,7 +165,7 @@ Other nRF52 boards (T1000-E, Nano G2 Ultra, WIO Tracker, etc.) do not yet implem
 - [ ] `set dutycycle` matches your regional regulatory requirement.
 - [ ] `powersaving on` evaluated for your board — check if sleep is implemented.
 - [ ] `set flood.advert.interval` set to the longest interval that still meets your network's re-discovery needs.
-- [ ] `get pwrmgt.bootmv` checked after first outdoor deployment to confirm the boot voltage is healthy.
+- [ ] `get pwrmgt.bootmv` checked after first outdoor deployment to confirm the boot voltage is healthy (only on the three boards that still support power management; elsewhere read `stats-core`).
 - [ ] Enclosure is weatherproof; cable entries are sealed.
 
 ---
@@ -162,6 +183,8 @@ Or via nRF52 power management:
 ```
 get pwrmgt.bootmv   — voltage at last boot (not current; updates each reboot)
 ```
+
+As of v1.18.0 `get pwrmgt.bootmv` only answers on the boards listed under [Boards with power management](#boards-with-power-management-at-v1180); elsewhere it returns `ERROR: Power management not supported` and `stats-core` is the only source.
 
 For real-time current voltage, query `stats-core` over serial or from the companion admin CLI stats tab.
 
