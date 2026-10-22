@@ -6,7 +6,14 @@ Every MeshCore infrastructure node — repeater, room server, sensor — respond
 - **Remotely**, over the mesh via the companion app's **Admin** tab.
 - **Over Ethernet** (v1.17, RAK4631 + RAK13800 hardware only) — a wired TCP alternative to the two above.
 
-This page explains both access paths, the command categories, and how to work safely on a live node. For the exhaustive command reference, see the [CLI Commands spec](https://docs.meshcore.io/cli_commands/) and the [Terminal Chat CLI spec](https://docs.meshcore.io/terminal_chat_cli/) on docs.meshcore.io.
+This page explains all the access paths, the command categories, and how to work safely on a live node. For the exhaustive command reference, see the [CLI Commands spec](https://docs.meshcore.io/cli_commands/) and the [Terminal Chat CLI spec](https://docs.meshcore.io/terminal_chat_cli/) on docs.meshcore.io.
+
+!!! note "Companion firmware also has a CLI as of v1.18"
+    v1.18.0 adds a text CLI to **companion** firmware, reached over the
+    companion's existing BLE/USB/Wi-Fi link or remotely over the mesh from a
+    contact granted the new **Remote CLI** permission. It is a separate
+    command path from the infrastructure CLI documented below — see
+    [Companion CLI](#companion-cli-v118).
 
 ---
 
@@ -59,6 +66,31 @@ symptoms.
 
 [config.meshcore.io](https://config.meshcore.io) provides a form-based UI over USB serial — a friendlier alternative to raw CLI for initial configuration (name, frequency, password, location).
 
+### Companion CLI (v1.18)
+
+Companion firmware gained its own CLI in v1.18.0. Commands travel over an
+established companion connection rather than a TCP port: locally through the
+companion app's command-line screen or a serial/USB app session, or remotely
+over the mesh from a contact whose **Remote CLI** permission is enabled. The
+protocol additions behind it (`CMD_RUN_CLI_COMMAND`, `RESP_CODE_CLI_REPLY` and
+companion protocol version code 14) are documented in [Command
+Lifecycle](../companion-api/command-lifecycle.md) rather than repeated here.
+
+The command set reuses the infrastructure radio-preference commands (`radio`,
+`af`, `dutycycle`, `int.thresh`, `cad`, `radio.rxgain`, `tx`, `rxdelay`,
+`txdelay`, `direct.txdelay`, `agc.reset.interval`, `path.hash.mode`,
+`multi.acks`, and the board-gated FEM gains), plus these companion-specific
+commands added in v1.18:
+
+| Command | Notes |
+|---------|-------|
+| `get/set tz.offset <-12..+14>` (v1.18) | Whole-hour offset used by the companion's clock display. Stored in preferences; default `0`. |
+| `get/set wifi.ssid <ssid>` / `get/set wifi.pwd <password>` (v1.18) | Wi-Fi-capable builds only. Reboot to apply. `get wifi.pwd` returns the stored password in clear text. |
+| `get wifi.status` / `get wifi.ip` (v1.18) | `connected` or `disconnected`, and the current address when connected. |
+| `get/set wifi.enabled 0\|1` (v1.18) | Reboot to apply. Enabled by default, but Wi-Fi only starts when an SSID is resolved (stored or compile-time). |
+| `set wifi.clear` (v1.18) | Erase the stored SSID and password; reboot to apply. |
+| `reboot`, `poweroff`, `shutdown` (v1.18) | New on companion firmware in v1.18. They do not send a reply. |
+
 ---
 
 ## Authentication and the admin password
@@ -110,6 +142,7 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 | `get public.key` | Node's public key (hex) |
 | `get name` / `set name <name>` | Node name advertised on the mesh | Budget: 23 bytes with location, 31 without (32-byte `app_data` minus flags minus lat/lon); truncated at a UTF-8 code-point boundary, never mid-character (v1.17) |
 | `get owner.info` | Owner info text |
+| `power` (v1.18) | Battery millivolts plus USB, solar-charger, external-power and charger state; inputs the board cannot sense report `n/a` |
 
 ### Statistics (serial only)
 
@@ -138,11 +171,16 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 | `get tx` / `set tx <dbm>` | TX power in dBm | Reboot to apply; check board limits |
 | `get freq` / `set freq <MHz>` | Frequency only | Serial-only for set |
 | `get radio.rxgain` / `set radio.rxgain on\|off` | Boosted RX gain (SX12xx and LR1110, v1.14.1+) | Default: on. No longer compile-gated (v1.17) — replies `Error: unsupported` on radios that lack it, rather than being absent from the CLI entirely |
-| `get/set cad on\|off` (v1.17) | Hardware Channel Activity Detection scan before TX; defers if the channel is busy | Default: **off**. Runs independently of `int.thresh` — either, both, or neither may be active. **Not available on companion firmware** until CAD is made configurable there |
+| `get/set cad on\|off` (v1.17) | Hardware Channel Activity Detection scan before TX; defers if the channel is busy | Default: **off**. Runs independently of `int.thresh` — either, both, or neither may be active. Companion firmware was hard-wired off before v1.18; it now exposes the same `get/set cad` through its [Companion CLI](#companion-cli-v118) (v1.18) |
 | `get/set radio.fem.rxgain on\|off` (v1.17) | External LoRa FEM receive-path LNA, board-gated | Separate from `radio.rxgain` (radio-chip gain, not the external FEM). `Error: unsupported` on boards without an FEM |
 | `get/set radio.fem.txgain on\|off` (v1.17) | External LoRa FEM transmit-path gain, board-gated | On Station G3: remove the PA PL1 jumper for software control; `on` = PL1 high/short, `off` = PL1 low/open — the PL2 hardware jumper picks which power-level pair this switches between. The level is applied at the **start of the next TX**, not immediately, so `get` reports the *configured* state, which may lead the hardware until the node next transmits |
 | `get/set extra.sf <sf>[,<sf>[,<sf>]]` (v1.17) | Up to 3 side-detector spreading factors for simultaneous extra-SF reception | **LR2021 radio only** — compiled out (and CLI-absent) on other radio families |
 | `tempradio <f>,<bw>,<sf>,<cr>,<mins>` | Temporary radio params | Reverts on reboot |
+
+`set af` is range-checked as of v1.18: values outside `0`–`9` are rejected with
+`ERROR: af must be 0-9`. `set agc.reset.interval` is also clamped to 0–1020
+seconds before rounding down to a multiple of 4 (v1.18). Both commands are
+available on companion firmware through the Companion CLI as well.
 
 ### Routing configuration
 
@@ -155,8 +193,8 @@ The password is stored in node preferences (survives reboot; lost on `erase`).
 | `get/set dutycycle <1-100>` | 50 | % duty cycle limit |
 | `get/set rxdelay <0-20>` | — | Receive-window delay base |
 | `get/set txdelay <0-2>` | 0.5 | Flood retransmit jitter factor |
-| `get/set direct.txdelay <0-2>` | 0.2 | Direct traffic retransmit jitter |
-| `get/set loop.detect off\|minimal\|moderate\|strict` | off | Drop looped flood packets (v1.14+) |
+| `get/set direct.txdelay <0-2>` | 0.3 (repeater, new installs); 0.2 (room server, sensor) | Direct traffic retransmit jitter (repeater default changed in v1.17) |
+| `get/set loop.detect off\|minimal\|moderate\|strict` | minimal (repeater, new installs, v1.18); existing nodes keep their value | Drop looped flood packets (v1.14+). `off` disables the check |
 | `get/set path.hash.mode 0\|1\|2` | 0 | 1/2/3-byte advert path hash (v1.14+) |
 | `get/set flood.advert.interval <hours>` | 47 (repeater) | Flood advert timer |
 | `get/set advert.interval <minutes>` | 0 | Zero-hop advert timer |
@@ -219,6 +257,7 @@ gps on / gps off        — enable/disable GPS
 gps sync                — sync clock from GPS
 gps setloc              — store current GPS fix as static location
 gps advert <policy>     — none | share | prefs
+gps diag                — req/en flags, satellites and fix state; NMEA providers add UART/NMEA counters and ages (v1.18)
 ```
 
 ### Power management (nRF52, supported boards)
@@ -233,6 +272,12 @@ get pwrmgt.bootmv       — boot voltage in millivolts
 `get pwrmgt.bootreason` is no longer nRF52-gated as of v1.17 — earlier
 firmware returned `ERROR: Power management not supported` on non-nRF52
 boards; it now reports the reset/shutdown reason on any board.
+
+As of v1.18, the low-voltage **boot lockout** is compiled out on most nRF52
+boards (it remains enabled on the Heltec T1, Heltec Tower V2 and Muzi Base
+builds), so a very low battery no longer parks those other boards in
+SYSTEMOFF before they boot. See [Power & Battery](power-and-battery.md) for the
+trade-off.
 
 See [Power & Battery](power-and-battery.md) and the [nRF52 Power Management spec](https://docs.meshcore.io/nrf52_power_management/) for context.
 
